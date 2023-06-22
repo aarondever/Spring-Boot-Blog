@@ -16,10 +16,10 @@ function Header() {
             <header className="d-flex justify-content-center py-3">
                 <ul className="nav nav-pills me-lg-auto mb-2 justify-content-center mb-md-0">
                     <li className="nav-item">
-                        <a href="/" className="nav-link link-body-emphasis">首页</a>
+                        <a href="/" className={`nav-link link-body-emphasis ${window.location.pathname === '/' && 'active'}`}>首页</a>
                     </li>
                     <li className="nav-item">
-                        <a href="/editPost" className="nav-link link-body-emphasis">发布文章</a>
+                        <a href="/editPost" className={`nav-link link-body-emphasis ${window.location.pathname === '/editPost' && 'active'}`}>发布文章</a>
                     </li>
                 </ul>
 
