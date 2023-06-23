@@ -35,35 +35,65 @@ public class PostController {
         return post != null ? ResponseEntity.ok(post) : ResponseEntity.notFound().build();
     }
 
+    /**
+     * insert post to database
+     *
+     * @param title   post title
+     * @param content post content
+     * @param image   post image
+     * @param tags    post tags
+     * @return success: http 201
+     * 1: title or content invalid: http 400
+     * 2: image type invalid: http 400
+     * 3: image size too large: http 400
+     */
     @PostMapping
-    public ResponseEntity<?> insertPost(
+    public ResponseEntity<Integer> insertPost(
             @RequestParam("title") String title,
             @RequestParam("content") String content,
             @RequestParam("image") MultipartFile image,
             @RequestParam("tags") String tags
     ) {
-        if (postService.insert(title, content, image, tags)) {
+        int postInsertStatus = postService.insert(title, content, image, tags);
+        if (postInsertStatus == 0) {
             // insert success
-            return ResponseEntity.noContent().build();
-        }else {
-            // failed to insert
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.created(null).build();
+        } else {
+            // request data invalid
+            return ResponseEntity.badRequest().body(postInsertStatus);
         }
     }
 
+    /**
+     * update post to database
+     *
+     * @param title   post title
+     * @param content post content
+     * @param image   post image
+     * @param tags    post tags
+     * @return success: http 204
+     * 1: title or content invalid: http 400
+     * 2: image type invalid: http 400
+     * 3: image size too large: http 400
+     * post not found: http 404
+     */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePost(
+    public ResponseEntity<Integer> updatePost(
             @PathVariable int id,
             @RequestParam("title") String title,
             @RequestParam("content") String content,
             @RequestParam("image") MultipartFile image,
             @RequestParam("tags") String tags) {
-        if (postService.update(id, title, content, image, tags)) {
+        int postUpdateStatus = postService.update(id, title, content, image, tags);
+        if (postUpdateStatus == 0) {
             // update success
             return ResponseEntity.noContent().build();
-        }else {
-            // failed to update
-            return ResponseEntity.badRequest().build();
+        } else if (postUpdateStatus == 4) {
+            // post not found
+            return ResponseEntity.notFound().build();
+        } else {
+            // request data invalid
+            return ResponseEntity.badRequest().body(postUpdateStatus);
         }
     }
 
@@ -72,7 +102,7 @@ public class PostController {
         if (postService.delete(id)) {
             // delete success
             return ResponseEntity.noContent().build();
-        }else {
+        } else {
             // failed to delete
             return ResponseEntity.notFound().build();
         }

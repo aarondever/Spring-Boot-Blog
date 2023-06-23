@@ -15,7 +15,7 @@ export const UserContext = createContext(null);
 function App() {
 
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [cookies] = useCookies(['XSRF-TOKEN']);
 
   const httpClient = axios.create({
@@ -32,12 +32,12 @@ function App() {
   };
 
   useEffect(() => {
-    setLoading(true);
+    setIsLoading(true);
     getUser();
-    setLoading(false);
+    setIsLoading(false);
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="spinner-border text-primary">
         <span className="visually-hidden">Loading...</span>

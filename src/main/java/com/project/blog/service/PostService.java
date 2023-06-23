@@ -8,6 +8,7 @@ import com.project.blog.mapper.UserMapper;
 import com.project.blog.pojo.Post;
 import com.project.blog.pojo.Tag;
 import com.project.blog.pojo.UserBean;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -47,18 +48,30 @@ public class PostService {
         return postMapper.findById(postId);
     }
 
-    public boolean insert(String title, String content, MultipartFile image, String tags) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            // user is not authenticated
-            return false;
+    public int insert(String title, String content, MultipartFile image, String tags) {
+        Post post = new Post();
+        post.setTitle(title.trim());
+        post.setContent(content.trim());
+        if(!isPostValidated(post)){
+            // title or content invalid
+            return 1;
         }
 
+        if (!image.isEmpty()) {
+            // image isn't empty
+            int imageValidation = validateImage(image);
+            if(imageValidation != 0){
+                // image invalid
+                return imageValidation;
+            }else {
+                post.setImage(uploadImage(image));
+            }
+        }
+
+        // set author
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         UserBean user = userMapper.findByUsername(username);
-
-        Post post = validatePost(title, content, image);
-        // set author
         post.setUser(user);
         // set current time
         Date now = new Date();
@@ -69,43 +82,62 @@ public class PostService {
             // insert success
             updateTags(post.getId(), tags);
         }
-        return result;
+        return 0;
     }
 
-    public boolean update(int postId, String title, String content, MultipartFile image, String tags) {
+    public int update(int postId, String title, String content, MultipartFile image, String tags) {
         Post post = postMapper.findById(postId);
         if(post == null){
             // post does not exist
-            return false;
+            return 4;
         }
+
+        post.setTitle(title.trim());
+        post.setContent(content.trim());
+        if(!isPostValidated(post)){
+            // title or content invalid
+            return 1;
+        }
+
         String oldImageName = post.getImage();
-        post = validatePost(title, content, image);
-        post.setId(postId);
+        if (!image.isEmpty()) {
+            // image isn't empty
+            int imageValidation = validateImage(image);
+            if(imageValidation != 0){
+                // image invalid
+                return imageValidation;
+            }else {
+                post.setImage(uploadImage(image));
+            }
+
+            if(oldImageName != null && !oldImageName.equals("")){
+                deleteImage(oldImageName);
+            }
+        }
+
         // set current time
         Date now = new Date();
         post.setUpdatedAt(now);
         boolean result = postMapper.update(post) > 0;
         if (result) {
             // update success
-            if(!oldImageName.equals("")){
-                deleteImage(oldImageName);
-            }
             updateTags(postId, tags);
         }
-        return result;
+        return 0;
     }
 
     public boolean delete(int postId) {
         Post post = postMapper.findById(postId);
-        if(!post.getImage().equals("")){
+        if(post.getImage() != null && !post.getImage().equals("")){
             deleteImage(post.getImage());
         }
-        postMapper.deletePostTagByPostId(postId);
+        deleteTagByTagIds(deletePostTag(postId));
         return postMapper.delete(postId) > 0;
     }
 
     private void updateTags(int postId, String tags) {
-        postMapper.deletePostTagByPostId(postId);
+        List<Integer> deletedTagIds = deletePostTag(postId);
+
         String[] tagNames = tags.trim().toLowerCase().split(" ");
         Set<String> tagNameSet = new HashSet<>(Arrays.asList(tagNames)); // remove duplicate; time complexity: O(n)
 //        tagNames = Arrays.stream(tagNames).distinct().toArray(String[]::new); time complexity: O(n log(n))
@@ -122,70 +154,66 @@ public class PostService {
                 postMapper.insertPostTag(postId, newTag.getId());
             }
         }
+
+        deleteTagByTagIds(deletedTagIds);
     }
 
-    private boolean validateImage(MultipartFile image) {
-        if (image.isEmpty()) {
-            return false;
-        }
+    private List<Integer> deletePostTag(int postId){
+        List<Integer> deletedTagIds = postMapper.findPostTagIdsByPostId(postId);
+        postMapper.deletePostTagByPostId(postId);
+        return deletedTagIds;
+    }
 
+    private void deleteTagByTagIds(List<Integer> tagIds){
+        for(int tagId : tagIds){
+            if(postMapper.getPostTagCountByTagId(tagId) == 0){
+                // the tag isn't associated with any post, delete it
+                tagMapper.delete(tagId);
+            }
+        }
+    }
+
+    private int validateImage(MultipartFile image) {
         String contentType = image.getContentType();
-        if (!contentType.equals("image/jpeg") && !contentType.equals("image/png") && !contentType.equals("image/gif")) {
+        if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
             // invalid file type
-            return false;
+            return 2;
         }
-
         long size = image.getSize();
         if (size > 5 * 1024 * 1024) {
             // file is too large
-            return false;
+            return 3;
         }
-
-        return true;
+        return 0;
     }
 
-    private Post validatePost(String title, String content, MultipartFile image) {
-        Post post = new Post();
-        post.setTitle(title.trim());
-        post.setContent(content.trim());
-
-        if (post.getTitle().length() == 0 || post.getContent().length() == 0) {
-            return null;
-        }
-
-        if (validateImage(image)) {
-
-            try {
-                post.setImage(uploadImage(image));
-            } catch (IOException e) {
-                // image upload failed
-                System.out.println(e.getMessage());
-                return null;
-            }
-        }
-
-        return post;
+    private boolean isPostValidated(Post post) {
+        return post.getTitle().length() != 0 && post.getContent().length() != 0;
     }
 
-    private String uploadImage(MultipartFile image) throws IOException{
-        File uploadDir = new File(new ClassPathResource(".").getFile().getPath()+imageUploadDir);
+    private String uploadImage(MultipartFile image){
+        File uploadDir = null;
+        try {
+            uploadDir = new File(new ClassPathResource(".").getFile().getPath()+imageUploadDir);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         if(!uploadDir.exists()) {
             // create directory if not exists
             uploadDir.mkdirs();
         }
 
         String imageName = image.getOriginalFilename();
-        File imageFile = new File(uploadDir, imageName);
-        int i = 1;
-        while (imageFile.exists()) {
-            // generate a new unique file name
-            imageName = i + "_" + image.getOriginalFilename();
-            imageFile = new File(uploadDir, imageName);
-            i++;
-        }
+        String ext = FilenameUtils.getExtension(imageName);
+        String uniqueName = UUID.randomUUID() + "." + ext;
+        File imageFile = new File(uploadDir, uniqueName);
 
-        image.transferTo(imageFile);
-        return imageName;
+        try {
+            image.transferTo(imageFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return uniqueName;
     }
 
     private void deleteImage(String imageName) {

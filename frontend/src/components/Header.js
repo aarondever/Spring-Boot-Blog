@@ -34,8 +34,8 @@ function Header() {
                     </div>
                 ) : (
                     <div className="text-end">
-                        <a href="login" className="btn btn-light text-dark me-2">登录</a>
-                        <a href="signup" className="btn btn-primary">注册</a>
+                        <a href="/login" className="btn btn-light text-dark me-2">登录</a>
+                        <a href="/signup" className="btn btn-primary">注册</a>
                     </div>
                 )}
 

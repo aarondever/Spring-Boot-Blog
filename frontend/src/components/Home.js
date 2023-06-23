@@ -40,7 +40,10 @@ function Home() {
     // delete post
     const deletePost = async (id) => {
         await httpClient.delete(`/api/post/${id}`)
-            .then(() => getPosts())
+            .then(() => {
+                getPosts();
+                getTags();
+            })
             .catch(error => console.error(error));
     }
 

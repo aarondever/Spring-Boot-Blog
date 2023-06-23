@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from "../App"
 
@@ -6,6 +6,10 @@ function Login() {
 
     const { getUser, httpClient } = useContext(UserContext);
     const navigate = useNavigate();
+
+    const [submitStatus, setSubmitStatus] = useState(0);
+    const [usernameInvalidText, setusernameInvalidText] = useState(null);
+    const [passwordInvalidText, setpasswordInvalidText] = useState(null);
 
     useEffect(() => {
         httpClient.get('/api/user')
@@ -22,8 +26,15 @@ function Login() {
         const username = formData.get('username').trim();
         const password = formData.get('password').trim();
 
-        if (username.length === 0 || password.length === 0) {
-            alert('用户名或密码不能为空');
+        if (username.length === 0) {
+            setSubmitStatus(1);
+            setusernameInvalidText('用户名不能为空');
+            return;
+        }
+
+        if (password.length === 0) {
+            setSubmitStatus(2);
+            setpasswordInvalidText('密码不能为空');
             return;
         }
 
@@ -37,7 +48,11 @@ function Login() {
                     navigate('/');
                 }
             })
-            .catch(() => alert('用户名或密码不正确'));
+            .catch(() => {
+                setSubmitStatus(3);
+                setusernameInvalidText('用户名或密码不正确');
+                setpasswordInvalidText('用户名或密码不正确');
+            });
     };
 
     return (
@@ -49,13 +64,21 @@ function Login() {
                         <h1 className="h3 mb-3 fw-normal">登录</h1>
 
                         <div className="form-floating mb-3">
-                            <input type="text" className="form-control" id="floatingInput" placeholder="用户名" name="username" required />
-                            <label>用户名</label>
+                            <input type="text" className={`form-control ${submitStatus === 1 || submitStatus === 3 ? 'is-invalid' : ''}`} 
+                            placeholder="用户名" name="username" />
+                            <label htmlFor='floatingInputValue'>用户名</label>
+                            <div className="invalid-feedback">
+                                {usernameInvalidText}
+                            </div>
                         </div>
 
                         <div className="form-floating mb-3">
-                            <input type="password" className="form-control" id="floatingPassword" placeholder="密码" name="password" required />
-                            <label>密码</label>
+                            <input type="password" className={`form-control ${submitStatus === 2 || submitStatus === 3 ? 'is-invalid' : ''}`} 
+                            placeholder="密码" name="password" />
+                            <label htmlFor='floatingInputValue'>密码</label>
+                            <div className="invalid-feedback">
+                                {passwordInvalidText}
+                            </div>
                         </div>
 
                         <button className="btn btn-primary w-100 py-2" type="submit">登录</button>

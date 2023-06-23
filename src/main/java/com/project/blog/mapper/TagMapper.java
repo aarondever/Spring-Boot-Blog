@@ -1,10 +1,7 @@
 package com.project.blog.mapper;
 
 import com.project.blog.pojo.Tag;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -23,5 +20,8 @@ public interface TagMapper {
     @Insert("INSERT INTO tag (name) VALUES (#{name})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Tag tag);
+
+    @Delete("DELETE FROM tag WHERE id=${tagId}")
+    int delete(int tagId);
 
 }

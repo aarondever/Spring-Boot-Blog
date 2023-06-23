@@ -53,6 +53,12 @@ public interface PostMapper {
     @Delete("DELETE FROM post WHERE id=#{postId}")
     int delete(int postId);
 
+    @Select("SELECT tag_id FROM post_tag WHERE post_id=#{postId}")
+    List<Integer> findPostTagIdsByPostId(int postId);
+
+    @Select("SELECT COUNT(tag_id) FROM post_tag WHERE tag_id=#{tagId}")
+    int getPostTagCountByTagId(int tagId);
+
     @Insert("INSERT INTO post_tag(post_id, tag_id) VALUES(#{postId}, #{tagId})")
     int insertPostTag(int postId, int tagId);
 
