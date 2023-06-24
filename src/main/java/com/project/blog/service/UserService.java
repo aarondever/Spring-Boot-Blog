@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserMapper userMapper;
-
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired

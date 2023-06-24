@@ -26,4 +26,5 @@ public class TagController {
         List<Tag> tags = tagService.getTags();
         return ResponseEntity.ok(tags);
     }
+
 }

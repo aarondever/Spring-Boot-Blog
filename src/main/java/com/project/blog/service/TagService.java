@@ -20,4 +20,5 @@ public class TagService {
     public List<Tag> getTags(){
         return tagMapper.findAll();
     }
+
 }

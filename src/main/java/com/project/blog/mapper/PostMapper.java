@@ -29,7 +29,6 @@ public interface PostMapper {
     })
     List<Post> findAll(@Param("search") String search, @Param("tagId") int tagId);
 
-
     @Select("SELECT * FROM post WHERE id=#{postId}")
     @Results({
             @Result(property = "id", column = "id"),
@@ -64,4 +63,5 @@ public interface PostMapper {
 
     @Delete("DELETE FROM post_tag WHERE post_id=#{postId}")
     int deletePostTagByPostId(int postId);
+
 }
