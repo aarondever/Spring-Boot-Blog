@@ -48,24 +48,14 @@ public class PostService {
         return postMapper.findById(postId);
     }
 
-    public int insert(String title, String content, MultipartFile image, String tags) {
+    public boolean insert(String title, String content, MultipartFile image, String tags) {
         Post post = new Post();
         post.setTitle(title.trim());
         post.setContent(content.trim());
-        if(!isPostValidated(post)){
-            // title or content invalid
-            return 1;
-        }
 
         if (!image.isEmpty()) {
             // image isn't empty
-            int imageValidation = validateImage(image);
-            if(imageValidation != 0){
-                // image invalid
-                return imageValidation;
-            }else {
-                post.setImage(uploadImage(image));
-            }
+            post.setImage(uploadImage(image));
         }
 
         // set author
@@ -82,35 +72,19 @@ public class PostService {
             // insert success
             updateTags(post.getId(), tags);
         }
-        return 0;
+        return result;
     }
 
-    public int update(int postId, String title, String content, MultipartFile image, String tags) {
+    public boolean update(int postId, String title, String content, MultipartFile image, String tags) {
         Post post = postMapper.findById(postId);
-        if(post == null){
-            // post does not exist
-            return 4;
-        }
-
         post.setTitle(title.trim());
         post.setContent(content.trim());
-        if(!isPostValidated(post)){
-            // title or content invalid
-            return 1;
-        }
 
         String oldImageName = post.getImage();
         if (!image.isEmpty()) {
-            // image isn't empty
-            int imageValidation = validateImage(image);
-            if(imageValidation != 0){
-                // image invalid
-                return imageValidation;
-            }else {
-                post.setImage(uploadImage(image));
-            }
+            post.setImage(uploadImage(image));
 
-            if(oldImageName != null && !oldImageName.equals("")){
+            if (oldImageName != null && !oldImageName.equals("")) {
                 deleteImage(oldImageName);
             }
         }
@@ -123,12 +97,12 @@ public class PostService {
             // update success
             updateTags(postId, tags);
         }
-        return 0;
+        return result;
     }
 
     public boolean delete(int postId) {
         Post post = postMapper.findById(postId);
-        if(post.getImage() != null && !post.getImage().equals("")){
+        if (post.getImage() != null && !post.getImage().equals("")) {
             deleteImage(post.getImage());
         }
         deleteTagByTagIds(deletePostTag(postId));
@@ -158,47 +132,29 @@ public class PostService {
         deleteTagByTagIds(deletedTagIds);
     }
 
-    private List<Integer> deletePostTag(int postId){
+    private List<Integer> deletePostTag(int postId) {
         List<Integer> deletedTagIds = postMapper.findPostTagIdsByPostId(postId);
         postMapper.deletePostTagByPostId(postId);
         return deletedTagIds;
     }
 
-    private void deleteTagByTagIds(List<Integer> tagIds){
-        for(int tagId : tagIds){
-            if(postMapper.getPostTagCountByTagId(tagId) == 0){
+    private void deleteTagByTagIds(List<Integer> tagIds) {
+        for (int tagId : tagIds) {
+            if (postMapper.getPostTagCountByTagId(tagId) == 0) {
                 // the tag isn't associated with any post, delete it
                 tagMapper.delete(tagId);
             }
         }
     }
 
-    private int validateImage(MultipartFile image) {
-        String contentType = image.getContentType();
-        if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
-            // invalid file type
-            return 2;
-        }
-        long size = image.getSize();
-        if (size > 5 * 1024 * 1024) {
-            // file is too large
-            return 3;
-        }
-        return 0;
-    }
-
-    private boolean isPostValidated(Post post) {
-        return post.getTitle().length() != 0 && post.getContent().length() != 0;
-    }
-
-    private String uploadImage(MultipartFile image){
+    private String uploadImage(MultipartFile image) {
         File uploadDir = null;
         try {
-            uploadDir = new File(new ClassPathResource(".").getFile().getPath()+imageUploadDir);
+            uploadDir = new File(new ClassPathResource(".").getFile().getPath() + imageUploadDir);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if(!uploadDir.exists()) {
+        if (!uploadDir.exists()) {
             // create directory if not exists
             uploadDir.mkdirs();
         }
