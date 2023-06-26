@@ -32,7 +32,7 @@ public class UserService {
 
     public boolean insertUser(UserBean user) {
         user.setUsername(user.getUsername().trim());
-        user.setPassword(user.getUsername().trim().trim());
+        user.setPassword(user.getPassword().trim());
         if (isUsernameExists(user.getUsername())) {
             // username already exists
             return false;
