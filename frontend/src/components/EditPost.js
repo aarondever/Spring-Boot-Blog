@@ -71,7 +71,7 @@ function EditPost() {
         }
 
         if (image.size > 0) {
-            if (image.type != 'image/jpeg' || image.type != 'image/png') {
+            if (image.type !== 'image/jpeg' || image.type !== 'image/png') {
                 // image type invalid
                 setInvalidField('image');
                 setInvalidText("图片格式不正确");
