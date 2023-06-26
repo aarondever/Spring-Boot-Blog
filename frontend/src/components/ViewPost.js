@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState, useContext } from 'react';
-import { UserContext } from "../App"
+import { useState, useContext, useEffect } from 'react';
+import { UserContext } from "../App";
 
 function formatDate(dateString) {
     const date = new Date(dateString);

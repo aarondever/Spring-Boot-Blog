@@ -1,25 +1,26 @@
 package com.project.blog.aspect;
 
 import com.project.blog.annotation.ValidatePost;
-import com.project.blog.mapper.PostMapper;
+import com.project.blog.service.PostService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 @Aspect
 @Component
-public class DataValidationAspect {
+public class PostDataValidationAspect {
 
-    private final PostMapper postMapper;
+    private final PostService postService;
 
     @Autowired
-    public DataValidationAspect(PostMapper postMapper) {
-        this.postMapper = postMapper;
+    public PostDataValidationAspect(PostService postService) {
+        this.postService = postService;
     }
 
     @Around("@annotation(validatePost)")
@@ -39,16 +40,19 @@ public class DataValidationAspect {
             }
         }
 
-        if(validatePost.id() && postMapper.findById(postId) == null){
+        if (validatePost.id() && postService.getPostById(postId) == null) {
             // post does not exist
             return ResponseEntity.notFound().build();
         }
 
-        if(validatePost.data()){
+        if (validatePost.data()) {
             int validationResult = validatePostData(title, content, image);
             if (validationResult == 0) {
                 // validation passed, proceed with target method
                 return joinPoint.proceed();
+            } else if (validationResult == 3) {
+                // image is too large
+                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).build();
             } else {
                 // validation failed, return bad request response
                 return ResponseEntity.badRequest().body(validationResult);
@@ -65,7 +69,8 @@ public class DataValidationAspect {
             return 1;
         }
 
-        if (image != null) {
+        if (!image.isEmpty()) {
+            // image isn't empty
             String contentType = image.getContentType();
             if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
                 // invalid image type

@@ -1,14 +1,14 @@
-import axios from 'axios'
+import axios from 'axios';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, lazy, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 
-import Header from './components/Header'
-import Home from './components/Home'
-import Login from './components/Login'
-import SignUp from './components/SignUp'
-import ViewPost from './components/ViewPost'
-import EditPost from './components/EditPost'
+import Header from './components/Header';
+import Home from './components/Home';
+import Login from './components/Login';
+import SignUp from './components/SignUp';
+import ViewPost from './components/ViewPost';
+import EditPost from './components/EditPost';
 
 export const UserContext = createContext(null);
 
@@ -23,18 +23,21 @@ function App() {
   });
 
   const getUser = () => {
+    setIsLoading(true);
     httpClient.get('/api/user')
-      .then(response => setUser(response.data))
+      .then(response => {
+        setUser(response.data)
+        setIsLoading(false);
+      })
       .catch(error => {
-        console.error(error);
         setUser(null);
+        setIsLoading(false);
+        console.error(error);
       });
   };
 
   useEffect(() => {
-    setIsLoading(true);
     getUser();
-    setIsLoading(false);
   }, []);
 
   if (isLoading) {
@@ -47,8 +50,8 @@ function App() {
 
   return (
     <UserContext.Provider value={{ user, getUser, httpClient }}>
-      <Header />
       <BrowserRouter>
+        <Header />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

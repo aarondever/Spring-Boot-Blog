@@ -8,11 +8,8 @@ function EditPost() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const [submitStatus, setSubmitStatus] = useState(0);
-    const [titleInvalidText, setTitleInvalidText] = useState(null);
-    const [contentInvalidText, setContentInvalidText] = useState(null);
-    const [imageInvalidText, setImageInvalidText] = useState(null);
-
+    const [invalidField, setInvalidField] = useState('');
+    const [invalidText, setInvalidText] = useState(null);
     const [post, setPost] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -33,7 +30,10 @@ function EditPost() {
                                 navigate('/');
                                 return;
                             }
+                            setIsLoading(false);
                         });
+                } else {
+                    setIsLoading(false);
                 }
             })
             .catch(error => {
@@ -49,7 +49,6 @@ function EditPost() {
                     return;
                 }
             });
-        setIsLoading(false);
     }, []);
 
     const handleSubmit = (event) => {
@@ -57,17 +56,34 @@ function EditPost() {
         const formData = new FormData(event.target);
         const title = formData.get('title').trim();
         const content = formData.get('content').trim();
+        const image = formData.get('image');
 
         if (title.length === 0) {
-            setSubmitStatus(1);
-            setTitleInvalidText('标题不能为空');
+            setInvalidField('title');
+            setInvalidText('标题不能为空');
             return;
         }
 
         if (content.length === 0) {
-            setSubmitStatus(2);
-            setContentInvalidText('内容不能为空');
+            setInvalidField('content');
+            setInvalidText('内容不能为空');
             return;
+        }
+
+        if (image.size > 0) {
+            if (image.type != 'image/jpeg' || image.type != 'image/png') {
+                // image type invalid
+                setInvalidField('image');
+                setInvalidText("图片格式不正确");
+                return;
+            }
+
+            if (image.size > 5 * 1024 * 1024) {
+                // image is too large
+                setInvalidField('image');
+                setInvalidText("图片超出5MB");
+                return;
+            }
         }
 
         if (id) {
@@ -103,15 +119,17 @@ function EditPost() {
         }
     };
 
-    function invalidImage(error){
-        setSubmitStatus(3);
-        if(error.response.data === 2){
-            // image type invalid
-            setImageInvalidText("图片格式不正确");
-        }else if (error.response.data === 3) {
-            // image too big
-            setImageInvalidText("图片超出5MB");
-        } else{
+    const invalidImage = (error) => {
+        if (error.response) {
+            setInvalidField('image');
+            if (error.response.status === 413) {
+                // image is too large
+                setInvalidText("图片超出5MB");
+            } else {
+                // image type invalid
+                setInvalidText("图片格式不正确");
+            }
+        } else {
             console.log(error);
         }
     }
@@ -135,33 +153,33 @@ function EditPost() {
                             <div className="card-body">
                                 <div className="form-group mb-3">
                                     <label htmlFor="title">标题:</label>
-                                    <input type="text" name="title" className={`form-control ${submitStatus === 1 ? 'is-invalid' : ''}`}
-                                     defaultValue={post ? post.title : null} />
+                                    <input type="text" name="title" className={`form-control ${invalidField === 'title' && 'is-invalid'}`}
+                                        defaultValue={post ? post.title : null} />
                                     <div className="invalid-feedback">
-                                        {titleInvalidText}
+                                        {invalidText}
                                     </div>
                                 </div>
 
                                 <div className="form-group mb-3">
                                     <label htmlFor="content">内容:</label>
-                                    <textarea name="content" className={`form-control ${submitStatus === 2 ? 'is-invalid' : ''}`}
-                                     defaultValue={post ? post.content : null} ></textarea>
+                                    <textarea name="content" className={`form-control ${invalidField === 'content' && 'is-invalid'}`}
+                                        defaultValue={post ? post.content : null} ></textarea>
                                     <div className="invalid-feedback">
-                                        {contentInvalidText}
+                                        {invalidText}
                                     </div>
                                 </div>
 
                                 <div className="form-group mb-3">
                                     <label htmlFor="image">图片:</label>
-                                    <input type="file" name="image" className={`form-control ${submitStatus === 3 ? 'is-invalid' : ''}`}
-                                     accept='.jpg,.jpeg,.png' />
-                                    {submitStatus !== 3 && (
+                                    <input type="file" name="image" className={`form-control ${invalidField === 'image' && 'is-invalid'}`}
+                                        accept='.jpg,.jpeg,.png' />
+                                    {invalidField !== 'image' && (
                                         <div className="form-text">
                                             图片格式: jpeg, jpg 和 png, 图片大小: &lt; 5MB
                                         </div>
                                     )}
                                     <div className="invalid-feedback">
-                                        {imageInvalidText}
+                                        {invalidText}
                                     </div>
                                 </div>
 

@@ -48,7 +48,7 @@ public class PostService {
         return postMapper.findById(postId);
     }
 
-    public boolean insert(String title, String content, MultipartFile image, String tags) {
+    public boolean insertPost(String title, String content, MultipartFile image, String tags) {
         Post post = new Post();
         post.setTitle(title.trim());
         post.setContent(content.trim());
@@ -75,7 +75,7 @@ public class PostService {
         return result;
     }
 
-    public boolean update(int postId, String title, String content, MultipartFile image, String tags) {
+    public boolean updatePost(int postId, String title, String content, MultipartFile image, String tags) {
         Post post = postMapper.findById(postId);
         post.setTitle(title.trim());
         post.setContent(content.trim());
@@ -100,7 +100,7 @@ public class PostService {
         return result;
     }
 
-    public boolean delete(int postId) {
+    public boolean deletePost(int postId) {
         Post post = postMapper.findById(postId);
         if (post.getImage() != null && !post.getImage().equals("")) {
             deleteImage(post.getImage());

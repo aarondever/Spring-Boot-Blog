@@ -1,8 +1,8 @@
 package com.project.blog.aspect;
 
-import com.project.blog.mapper.UserMapper;
 import com.project.blog.pojo.Post;
 import com.project.blog.pojo.UserBean;
+import com.project.blog.service.UserService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -23,11 +23,11 @@ public class PostControllerLoggingAspect {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final ThreadLocal<UserBean> userThreadLocal = new ThreadLocal<>();  // thread safe
-    private final UserMapper userMapper;
+    private final UserService userService;
 
     @Autowired
-    public PostControllerLoggingAspect(UserMapper userMapper) {
-        this.userMapper = userMapper;
+    public PostControllerLoggingAspect(UserService userService) {
+        this.userService = userService;
     }
 
     @Pointcut("execution(* com.project.blog.controller.PostController.insertPost(..)) || " +
@@ -87,7 +87,7 @@ public class PostControllerLoggingAspect {
     private UserBean getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        return userMapper.findByUsername(username);
+        return userService.getUserByUsername(username);
     }
 
 }

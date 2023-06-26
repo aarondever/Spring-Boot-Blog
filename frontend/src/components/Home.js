@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useContext } from 'react';
+import { useState, useContext, useCallback, useEffect } from 'react';
 import { UserContext } from "../App"
 
 function formatDate(dateString) {
@@ -14,21 +14,21 @@ function Home() {
     const [search, setSearch] = useState("");
     const [tagId, setTagId] = useState(0);
     const [page, setPage] = useState(1);
-    const [selectedPost, setSelectedPost] = useState({ id: 0, title: '' });
+    const[selectedPost, setSelectedPost]  = useState({ id: 0, title: '' });
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         getPosts();
         getTags();
-    }, [search, tagId, page]);
+    }, []);
 
     // get post list
-    const getPosts = () => {
+    const getPosts = useCallback(() => {
         httpClient.get('/api/post', {
             params: { search, tagId, page }
         })
             .then(response => setPosts(response.data))
             .catch(error => console.error(error));
-    };
+    }, [search, tagId, page]);
 
     // get all tag
     const getTags = () => {

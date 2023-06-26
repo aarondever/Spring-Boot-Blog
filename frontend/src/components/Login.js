@@ -1,15 +1,14 @@
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from "../App"
+import { UserContext } from "../App";
 
 function Login() {
 
     const { getUser, httpClient } = useContext(UserContext);
     const navigate = useNavigate();
-
-    const [submitStatus, setSubmitStatus] = useState(0);
-    const [usernameInvalidText, setusernameInvalidText] = useState(null);
-    const [passwordInvalidText, setpasswordInvalidText] = useState(null);
+    
+    const [invalidField, setInvalidField] = useState('');
+    const [invalidText, setInvalidText] = useState(null);
 
     useEffect(() => {
         httpClient.get('/api/user')
@@ -27,14 +26,14 @@ function Login() {
         const password = formData.get('password').trim();
 
         if (username.length === 0) {
-            setSubmitStatus(1);
-            setusernameInvalidText('用户名不能为空');
+            setInvalidField('username');
+            setInvalidText('用户名不能为空');
             return;
         }
 
         if (password.length === 0) {
-            setSubmitStatus(2);
-            setpasswordInvalidText('密码不能为空');
+            setInvalidField('password');
+            setInvalidText('密码不能为空');
             return;
         }
 
@@ -49,9 +48,8 @@ function Login() {
                 }
             })
             .catch(() => {
-                setSubmitStatus(3);
-                setusernameInvalidText('用户名或密码不正确');
-                setpasswordInvalidText('用户名或密码不正确');
+                setInvalidField('username');
+                setInvalidText('用户名或密码不正确');
             });
     };
 
@@ -64,20 +62,20 @@ function Login() {
                         <h1 className="h3 mb-3 fw-normal">登录</h1>
 
                         <div className="form-floating mb-3">
-                            <input type="text" className={`form-control ${submitStatus === 1 || submitStatus === 3 ? 'is-invalid' : ''}`} 
-                            placeholder="用户名" name="username" />
+                            <input type="text" className={`form-control ${invalidField === 'username' && 'is-invalid'}`}
+                                placeholder="用户名" name="username" />
                             <label htmlFor='floatingInputValue'>用户名</label>
                             <div className="invalid-feedback">
-                                {usernameInvalidText}
+                                {invalidText}
                             </div>
                         </div>
 
                         <div className="form-floating mb-3">
-                            <input type="password" className={`form-control ${submitStatus === 2 || submitStatus === 3 ? 'is-invalid' : ''}`} 
-                            placeholder="密码" name="password" />
+                            <input type="password" className={`form-control ${invalidField === 'password' && 'is-invalid'}`}
+                                placeholder="密码" name="password" />
                             <label htmlFor='floatingInputValue'>密码</label>
                             <div className="invalid-feedback">
-                                {passwordInvalidText}
+                                {invalidText}
                             </div>
                         </div>
 

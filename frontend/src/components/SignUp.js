@@ -6,11 +6,9 @@ function SignUp() {
 
     const { httpClient } = useContext(UserContext);
     const navigate = useNavigate();
-    
-    const [submitStatus, setSubmitStatus] = useState(0);
-    const [usernameInvalidText, setusernameInvalidText] = useState(null);
-    const [passwordInvalidText, setpasswordInvalidText] = useState(null);
-    const [confirmPasswordInvalidText, setConfirmPasswordInvalidText] = useState(null);
+
+    const [invalidField, setInvalidField] = useState('');
+    const [invalidText, setInvalidText] = useState(null);
 
     useEffect(() => {
         // user in UserContext won't update in time in here, thus send request to api
@@ -30,20 +28,20 @@ function SignUp() {
         const confirmPassword = formData.get('confirm_password').trim();
 
         if (username.length === 0) {
-            setSubmitStatus(1);
-            setusernameInvalidText('用户名不能为空');
+            setInvalidField('username');
+            setInvalidText('用户名不能为空');
             return;
         }
 
         if (password.length === 0) {
-            setSubmitStatus(2);
-            setpasswordInvalidText('密码不能为空');
+            setInvalidField('password');
+            setInvalidText('密码不能为空');
             return;
         }
 
         if (password !== confirmPassword) {
-            setSubmitStatus(3);
-            setConfirmPasswordInvalidText('密码不匹配');
+            setInvalidField('confirm_password');
+            setInvalidText('密码不匹配');
             return;
         }
 
@@ -57,8 +55,8 @@ function SignUp() {
                 }
             })
             .catch(() => {
-                setSubmitStatus(4);
-                setusernameInvalidText('用户名已存在');
+                setInvalidField('username');
+                setInvalidText('用户名已存在');
             });
     };
 
@@ -70,29 +68,29 @@ function SignUp() {
                         <h1 className="h3 mb-3 fw-normal">注册</h1>
 
                         <div className="form-floating mb-3">
-                            <input type="text" className={`form-control ${submitStatus === 1 || submitStatus === 4 ? 'is-invalid' : ''}`}
+                            <input type="text" className={`form-control ${invalidField === 'username' && 'is-invalid'}`}
                                 placeholder="用户名" name="username" />
                             <label htmlFor='floatingInputValue'>用户名</label>
                             <div className="invalid-feedback">
-                                {usernameInvalidText}
+                                {invalidText}
                             </div>
                         </div>
 
                         <div className="form-floating mb-3">
-                            <input type="password" className={`form-control ${submitStatus === 2 ? 'is-invalid' : ''}`}
+                            <input type="password" className={`form-control ${invalidField === 'password' && 'is-invalid'}`}
                                 placeholder="密码" name="password" />
                             <label htmlFor='floatingInputValue'>密码</label>
                             <div className="invalid-feedback">
-                                {passwordInvalidText}
+                                {invalidText}
                             </div>
                         </div>
 
                         <div className="form-floating mb-3">
-                            <input type="password" className={`form-control ${submitStatus === 3 ? 'is-invalid' : ''}`}
+                            <input type="password" className={`form-control ${invalidField === 'confirm_password' && 'is-invalid'}`}
                                 placeholder="确认密码" name="confirm_password" />
                             <label htmlFor='floatingInputValue'>确认密码</label>
                             <div className="invalid-feedback">
-                                {confirmPasswordInvalidText}
+                                {invalidText}
                             </div>
                         </div>
 

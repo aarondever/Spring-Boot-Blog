@@ -46,7 +46,7 @@ public class PostController {
      * @return success: http 201
      * 1: title or content invalid: http 400
      * 2: image type invalid: http 400
-     * 3: image size too large: http 400
+     * image size too large: http 413
      */
     @ValidatePost(id = false)
     @PostMapping
@@ -56,7 +56,7 @@ public class PostController {
             @RequestParam("image") MultipartFile image,
             @RequestParam("tags") String tags
     ) {
-        if (postService.insert(title, content, image, tags)) {
+        if (postService.insertPost(title, content, image, tags)) {
             // insert success
             return ResponseEntity.created(null).build();
         } else {
@@ -75,7 +75,7 @@ public class PostController {
      * @return success: http 204
      * 1: title or content invalid: http 400
      * 2: image type invalid: http 400
-     * 3: image size too large: http 400
+     * image size too large: http 413
      * post not found: http 404
      */
     @ValidatePost
@@ -86,7 +86,7 @@ public class PostController {
             @RequestParam("content") String content,
             @RequestParam("image") MultipartFile image,
             @RequestParam("tags") String tags) {
-        if (postService.update(id, title, content, image, tags)) {
+        if (postService.updatePost(id, title, content, image, tags)) {
             // update success
             return ResponseEntity.noContent().build();
         } else {
@@ -98,7 +98,7 @@ public class PostController {
     @ValidatePost(data = false)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePost(@PathVariable int id) {
-        if (postService.delete(id)) {
+        if (postService.deletePost(id)) {
             // delete success
             return ResponseEntity.noContent().build();
         } else {

@@ -22,7 +22,7 @@ public class TagController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Tag>> getTags(){
+    public ResponseEntity<List<Tag>> getTags() {
         List<Tag> tags = tagService.getTags();
         return ResponseEntity.ok(tags);
     }
