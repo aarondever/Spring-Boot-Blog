@@ -33,8 +33,7 @@ public class PostControllerLoggingAspect {
     @Pointcut("execution(* com.project.blog.controller.PostController.insertPost(..)) || " +
             "execution(* com.project.blog.controller.PostController.updatePost(..)) || " +
             "execution(* com.project.blog.controller.PostController.deletePost(..))")
-    public void postControllerMethods() {
-    }
+    public void postControllerMethods() { }
 
     @Before("postControllerMethods()")
     public void logBefore(JoinPoint joinPoint) {
