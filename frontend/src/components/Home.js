@@ -106,7 +106,7 @@ function Home() {
                                                 <p className="card-text"><small className="text-body-secondary">作者: {post.user.username}</small></p>
                                                 <p className="card-text"><small className="text-body-secondary">创建于: {formatDate(post.createdAt)}</small></p>
                                                 <p className="card-text"><small className="text-body-secondary">最近更新: {formatDate(post.updatedAt)}</small></p>
-                                                <p className="card-text text-truncate"><small className="text-body-secondary">{post.tags.map(tag => `#${tag.name}`).join(' ')}</small></p>
+                                                <p className="card-text text-truncate"><small className="text-body-secondary">{post.tags.length === 0 ? '#' : post.tags.map(tag => `#${tag.name}`).join(' ')}</small></p>
                                             </div>
                                         </div>
                                     </div>

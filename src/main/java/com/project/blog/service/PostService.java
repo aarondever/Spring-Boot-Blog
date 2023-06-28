@@ -116,6 +116,9 @@ public class PostService {
         Set<String> tagNameSet = new HashSet<>(Arrays.asList(tagNames)); // remove duplicate; time complexity: O(n)
 //        tagNames = Arrays.stream(tagNames).distinct().toArray(String[]::new); time complexity: O(n log(n))
         for (String tagName : tagNameSet) {
+            if(tagName.equals(""))
+                // eliminate empty string
+                continue;
             Tag tag = tagMapper.findByName(tagName);
             if (tag != null) {
                 // tag exists, insert to post_tag

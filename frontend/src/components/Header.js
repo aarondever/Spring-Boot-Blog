@@ -138,7 +138,7 @@ function Header() {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">修改</h5>
+                            <h5 className="modal-title">修改{updatePassword ? '密码' : '用户名'}</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <form onSubmit={handleSubmit}>
