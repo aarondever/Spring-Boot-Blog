@@ -11,6 +11,9 @@ public interface TagMapper {
     @Select("SELECT * FROM tag")
     List<Tag> findAll();
 
+    @Select("SELECT t.* FROM tag t JOIN post_tag pt ON t.id=pt.tag_id WHERE pt.post_id=#{postId}")
+    List<Tag> findByPostId(int postId);
+
     @Select("SELECT * FROM tag WHERE name=#{name}")
     Tag findByName(String name);
 
