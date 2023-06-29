@@ -24,8 +24,8 @@ function ViewPost() {
             });
     }, []);
 
-    const deletePost = async (id) => {
-        await httpClient.delete(`/api/post/${id}`)
+    const deletePost = (id) => {
+        httpClient.delete(`/api/post/${id}`)
             .then(() => {
                 if (window.history.length > 2) {
                     // has previous browser’s history
