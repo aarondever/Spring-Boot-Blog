@@ -1,4 +1,4 @@
-import { useState, useContext, useCallback, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { UserContext } from "../App"
 
 function formatDate(dateString) {
@@ -59,7 +59,7 @@ function Home() {
             <div className="row">
                 <div className="col-sm-3 col-md-2">
                     <div className="d-flex flex-column flex-shrink-0 p-3" style={{ width: "280px" }}>
-                        <p className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-body-emphasis"><span className="fs-4">标签:</span></p>
+                        <p className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-body-emphasis"><span className="fs-4">Tags:</span></p>
                         <hr />
                         <ul className="nav nav-pills flex-column mb-auto">
                             {tags.map(tag => (
@@ -77,8 +77,8 @@ function Home() {
                         <div className="col-md-4">
                             <form onSubmit={handleSearchSubmit}>
                                 <div className="input-group rounded">
-                                    <input type="search" className="form-control" placeholder="搜索" name="search" />
-                                    <button type="submit" className="btn btn-outline-primary">搜索</button>
+                                    <input type="search" className="form-control" placeholder="search title or content" name="search" />
+                                    <button type="submit" className="btn btn-outline-primary">Search</button>
                                 </div>
                             </form>
                         </div>
@@ -103,9 +103,9 @@ function Home() {
                                                 <p className="card-text text-truncate">
                                                     {post.content}
                                                 </p>
-                                                <p className="card-text"><small className="text-body-secondary">作者: {post.user.username}</small></p>
-                                                <p className="card-text"><small className="text-body-secondary">创建于: {formatDate(post.createdAt)}</small></p>
-                                                <p className="card-text"><small className="text-body-secondary">最近更新: {formatDate(post.updatedAt)}</small></p>
+                                                <p className="card-text"><small className="text-body-secondary">Author: {post.user.username}</small></p>
+                                                <p className="card-text"><small className="text-body-secondary">Posted at: {formatDate(post.createdAt)}</small></p>
+                                                <p className="card-text"><small className="text-body-secondary">Last update: {formatDate(post.updatedAt)}</small></p>
                                                 <p className="card-text text-truncate"><small className="text-body-secondary">{post.tags.length === 0 ? '#' : post.tags.map(tag => `#${tag.name}`).join(' ')}</small></p>
                                             </div>
                                         </div>
@@ -114,8 +114,8 @@ function Home() {
                                         {user && user.id === post.user.id && (
                                             // login user is the author
                                             <div className="col-md-4">
-                                                <a href={`/editPost/${post.id}`} className="btn btn-primary me-2">编辑</a>
-                                                <button type="button" name="btnDelete" className="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal" onClick={() => setSelectedPost(post)}>删除</button>
+                                                <a href={`/editPost/${post.id}`} className="btn btn-primary me-2">Edit</a>
+                                                <button type="button" name="btnDelete" className="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal" onClick={() => setSelectedPost(post)}>Delete</button>
                                             </div>
                                         )}
                                     </div>
@@ -158,15 +158,15 @@ function Home() {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">删除文章</h5>
+                            <h5 className="modal-title">Delete Post</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            <p className="text-truncate">确定要删除{selectedPost.title}?</p>
+                            <p className="text-truncate">Are you sure you wanna delete '{selectedPost.title}'?</p>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={() => deletePost(selectedPost.id)}>删除</button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={() => deletePost(selectedPost.id)}>Delete</button>
                         </div>
                     </div>
                 </div>

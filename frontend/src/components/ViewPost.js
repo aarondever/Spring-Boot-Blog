@@ -49,8 +49,8 @@ function ViewPost() {
                     {user && user.id === post.user.id && (
                         // login user is the author
                         <div className="col-md-4 offset-md-4">
-                            <a href={`/editPost/${post.id}`} className="btn btn-primary me-2">编辑</a>
-                            <button type="button" name="btnDelete" className="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">删除</button>
+                            <a href={`/editPost/${post.id}`} className="btn btn-primary me-2">Edit</a>
+                            <button type="button" name="btnDelete" className="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">Delete</button>
                         </div>
                     )}
                     <p className="blog-post-meta">{formatDate(post.createdAt)} by {post.user.username}</p>
@@ -77,7 +77,7 @@ function ViewPost() {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">删除文章</h5>
+                            <h5 className="modal-title">Delete Post</h5>
                             <button
                                 type="button"
                                 className="btn-close"
@@ -87,12 +87,12 @@ function ViewPost() {
                         </div>
                         <div className="modal-body">
                             <p className="text-truncate">
-                                确定要删除{post && post.title}?
+                                Are you sure you wanna delete '{post && post.title}'?
                             </p>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={() => deletePost(post.id)}>删除</button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={() => deletePost(post.id)}>Delete</button>
                         </div>
                     </div>
                 </div>

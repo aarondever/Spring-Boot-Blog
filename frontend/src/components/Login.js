@@ -27,13 +27,13 @@ function Login() {
 
         if (username.length === 0) {
             setInvalidField('username');
-            setInvalidText('用户名不能为空');
+            setInvalidText('Please enter a username');
             return;
         }
 
         if (password.length === 0) {
             setInvalidField('password');
-            setInvalidText('密码不能为空');
+            setInvalidText('Please enter a password');
             return;
         }
 
@@ -49,7 +49,7 @@ function Login() {
             })
             .catch(() => {
                 setInvalidField('username');
-                setInvalidText('用户名或密码不正确');
+                setInvalidText('Username or password incorrect');
             });
     };
 
@@ -59,12 +59,12 @@ function Login() {
                 <div className="col-md-4">
                     <form onSubmit={handleSubmit}>
 
-                        <h1 className="h3 mb-3 fw-normal">登录</h1>
+                        <h1 className="h3 mb-3 fw-normal">Login</h1>
 
                         <div className="form-floating mb-3">
                             <input type="text" className={`form-control ${invalidField === 'username' && 'is-invalid'}`}
-                                placeholder="用户名" name="username" />
-                            <label htmlFor='floatingInputValue'>用户名</label>
+                                placeholder="username" name="username" />
+                            <label htmlFor='floatingInputValue'>Username</label>
                             <div className="invalid-feedback">
                                 {invalidText}
                             </div>
@@ -72,14 +72,14 @@ function Login() {
 
                         <div className="form-floating mb-3">
                             <input type="password" className={`form-control ${invalidField === 'password' && 'is-invalid'}`}
-                                placeholder="密码" name="password" />
-                            <label htmlFor='floatingInputValue'>密码</label>
+                                placeholder="password" name="password" />
+                            <label htmlFor='floatingInputValue'>Password</label>
                             <div className="invalid-feedback">
                                 {invalidText}
                             </div>
                         </div>
 
-                        <button className="btn btn-primary w-100 py-2" type="submit">登录</button>
+                        <button className="btn btn-primary w-100 py-2" type="submit">Login</button>
                     </form>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { createContext, lazy, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 
 import Header from './components/Header';

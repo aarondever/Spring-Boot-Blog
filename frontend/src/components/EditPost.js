@@ -60,13 +60,13 @@ function EditPost() {
 
         if (title.length === 0) {
             setInvalidField('title');
-            setInvalidText('标题不能为空');
+            setInvalidText('Please enter a title');
             return;
         }
 
         if (content.length === 0) {
             setInvalidField('content');
-            setInvalidText('内容不能为空');
+            setInvalidText('Please enter a content');
             return;
         }
 
@@ -74,14 +74,14 @@ function EditPost() {
             if (image.type !== 'image/jpeg' && image.type !== 'image/png') {
                 // image type invalid
                 setInvalidField('image');
-                setInvalidText("图片格式不正确");
+                setInvalidText("Image type invalid");
                 return;
             }
 
             if (image.size > 5 * 1024 * 1024) {
                 // image is too large
                 setInvalidField('image');
-                setInvalidText("图片超出5MB");
+                setInvalidText("Image size needs to be < 5MB");
                 return;
             }
         }
@@ -124,10 +124,10 @@ function EditPost() {
             setInvalidField('image');
             if (error.response.status === 413) {
                 // image is too large
-                setInvalidText("图片超出5MB");
+                setInvalidText("Image size needs to be < 5MB");
             } else {
                 // image type invalid
-                setInvalidText("图片格式不正确");
+                setInvalidText("Image type invalid");
             }
         } else {
             console.log(error);
@@ -148,11 +148,11 @@ function EditPost() {
                 <div className="col-md-8">
                     <form onSubmit={handleSubmit}>
                         <div className="card">
-                            <div className="card-header">文章</div>
+                            <div className="card-header">Post</div>
 
                             <div className="card-body">
                                 <div className="form-group mb-3">
-                                    <label htmlFor="title">标题:</label>
+                                    <label htmlFor="title">Title:</label>
                                     <input type="text" name="title" className={`form-control ${invalidField === 'title' && 'is-invalid'}`}
                                         defaultValue={post ? post.title : null} />
                                     <div className="invalid-feedback">
@@ -161,7 +161,7 @@ function EditPost() {
                                 </div>
 
                                 <div className="form-group mb-3">
-                                    <label htmlFor="content">内容:</label>
+                                    <label htmlFor="content">Content:</label>
                                     <textarea name="content" className={`form-control ${invalidField === 'content' && 'is-invalid'}`}
                                         defaultValue={post ? post.content : null} ></textarea>
                                     <div className="invalid-feedback">
@@ -170,12 +170,12 @@ function EditPost() {
                                 </div>
 
                                 <div className="form-group mb-3">
-                                    <label htmlFor="image">图片:</label>
+                                    <label htmlFor="image">Image:</label>
                                     <input type="file" name="image" className={`form-control ${invalidField === 'image' && 'is-invalid'}`}
                                         accept='.jpg,.jpeg,.png' />
                                     {invalidField !== 'image' && (
                                         <div className="form-text">
-                                            图片格式: jpeg, jpg 和 png, 图片大小: &lt; 5MB
+                                            Image type: jpeg, jpg, png, Image size: &lt; 5MB
                                         </div>
                                     )}
                                     <div className="invalid-feedback">
@@ -184,15 +184,15 @@ function EditPost() {
                                 </div>
 
                                 <div className="form-group mb-3">
-                                    <label htmlFor="tags">标签:</label>
+                                    <label htmlFor="tags">Tags:</label>
                                     <textarea name="tags" className="form-control" defaultValue={post ? post.tags.map(tag => tag.name).join(' ') : null}></textarea>
                                     <div className="form-text">
-                                        标签之间用空格分隔, 例如: python java
+                                        Separate tags with spaces. (ex: python java programming_language)
                                     </div>
                                 </div>
 
                                 <button type="submit" name="btnPost" className="btn btn-primary">
-                                    {id ? '更新' : '发布'}
+                                    {id ? 'Save' : 'Post'}
                                 </button>
                             </div>
                         </div>
