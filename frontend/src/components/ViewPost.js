@@ -38,7 +38,7 @@ function ViewPost() {
     }
 
     return (
-        <div className="container">
+        <div className="container position-relative">
 
             {post ? (
 

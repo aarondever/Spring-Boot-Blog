@@ -1,14 +1,16 @@
 import axios from 'axios';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { createContext, useEffect, useState } from 'react';
+import { Suspense, createContext, lazy, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 
 import Header from './components/Header';
 import Home from './components/Home';
-import Login from './components/Login';
-import SignUp from './components/SignUp';
-import ViewPost from './components/ViewPost';
-import EditPost from './components/EditPost';
+import Loading from './components/Loading';
+
+const Login = lazy(() => import('./components/Login'));
+const SignUp = lazy(() => import('./components/SignUp'));
+const ViewPost = lazy(() => import('./components/EditPost'));
+const EditPost = lazy(() => import('./components/Loading'));
 
 export const UserContext = createContext(null);
 
@@ -26,7 +28,7 @@ function App() {
     setIsLoading(true);
     httpClient.get('/api/user')
       .then(response => {
-        setUser(response.data)
+        setUser(response.data);
         setIsLoading(false);
       })
       .catch(error => {
@@ -42,9 +44,7 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="spinner-border text-primary">
-        <span className="visually-hidden">Loading...</span>
-      </div>
+      <Loading />
     );
   }
 
@@ -52,14 +52,16 @@ function App() {
     <UserContext.Provider value={{ user, getUser, httpClient }}>
       <BrowserRouter>
         <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/viewPost/:id" element={<ViewPost />} />
-          <Route path="/editPost" element={<EditPost />} />
-          <Route path="/editPost/:id" element={<EditPost />} />
-        </Routes>
+        <Suspense fallback={<Loading />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/viewPost/:id" element={<ViewPost />} />
+            <Route path="/editPost" element={<EditPost />} />
+            <Route path="/editPost/:id" element={<EditPost />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </UserContext.Provider>
   );

@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { UserContext } from "../App"
+import Loading from './Loading';
 
 function EditPost() {
 
@@ -136,14 +137,12 @@ function EditPost() {
 
     if (isLoading) {
         return (
-            <div className="spinner-border text-primary">
-                <span className="visually-hidden">Loading...</span>
-            </div>
+            <Loading />
         );
     }
 
     return (
-        <div className="container">
+        <div className="container position-relative">
             <div className="row justify-content-center">
                 <div className="col-md-8">
                     <form onSubmit={handleSubmit}>
