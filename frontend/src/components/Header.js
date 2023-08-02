@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from "../App";
 
 function Header() {
@@ -107,10 +107,10 @@ function Header() {
             <header className="d-flex justify-content-center py-3">
                 <ul className="nav nav-pills me-lg-auto mb-2 justify-content-center mb-md-0">
                     <li className="nav-item">
-                        <a href="/" className={`nav-link link-body-emphasis ${window.location.pathname === '/' && 'active'}`}>Home</a>
+                        <Link to="/" className={`nav-link link-body-emphasis ${window.location.pathname === '/' && 'active'}`}>Home</Link>
                     </li>
                     <li className="nav-item">
-                        <a href="/editPost" className={`nav-link link-body-emphasis ${window.location.pathname === '/editPost' && 'active'}`}>New Post</a>
+                        <Link to="/editPost" className={`nav-link link-body-emphasis ${window.location.pathname === '/editPost' && 'active'}`}>New Post</Link>
                     </li>
                 </ul>
 
@@ -128,8 +128,8 @@ function Header() {
                     </div>
                 ) : (
                     <div className="text-end">
-                        <a href="/login" className="btn btn-light text-dark me-2">Login</a>
-                        <a href="/signup" className="btn btn-primary">Sign-Up</a>
+                        <Link to="/login" className="btn btn-light text-dark me-2">Login</Link>
+                        <Link to="/signup" className="btn btn-primary">Sign-Up</Link>
                     </div>
                 )}
 

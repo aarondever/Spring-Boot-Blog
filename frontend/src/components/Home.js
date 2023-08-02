@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
 import { UserContext } from "../App"
+import { Link } from 'react-router-dom';
 
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -96,9 +97,9 @@ function Home() {
                                         <div className="col-md-8">
                                             <div className="card-body">
                                                 <h3 className="card-title text-truncate">
-                                                    <a href={`/viewPost/${post.id}`} className="link-underline link-underline-opacity-0 link-underline-opacity-75-hover stretched-link">
+                                                    <Link to={`/viewPost/${post.id}`} className="link-underline link-underline-opacity-0 link-underline-opacity-75-hover stretched-link">
                                                         {post.title}
-                                                    </a>
+                                                    </Link>
                                                 </h3>
                                                 <p className="card-text text-truncate">
                                                     {post.content}
@@ -114,7 +115,7 @@ function Home() {
                                         {user && user.id === post.user.id && (
                                             // login user is the author
                                             <div className="col-md-4">
-                                                <a href={`/editPost/${post.id}`} className="btn btn-primary me-2">Edit</a>
+                                                <Link to={`/editPost/${post.id}`} className="btn btn-primary me-2">Edit</Link>
                                                 <button type="button" name="btnDelete" className="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal" onClick={() => setSelectedPost(post)}>Delete</button>
                                             </div>
                                         )}
