@@ -10,7 +10,7 @@ import API from './API';
 
 const Login = lazy(() => import('./components/Login'));
 const SignUp = lazy(() => import('./components/SignUp'));
-const ViewPost = lazy(() => import('./components/EditPost'));
+const ViewPost = lazy(() => import('./components/ViewPost'));
 const EditPost = lazy(() => import('./components/EditPost'));
 
 export const UserContext = createContext(null);

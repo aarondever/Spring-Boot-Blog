@@ -1,6 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useContext, useEffect } from 'react';
 import { UserContext } from "../App";
+import Loading from './Loading';
+import API from '../API';
 
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -11,17 +13,27 @@ function ViewPost() {
 
     const { user, httpClient } = useContext(UserContext);
     const { id } = useParams();
+    const [isLoading, setIsLoading] = useState(true);
     const [post, setPost] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        httpClient.get(`/api/post/${id}`)
-            .then(response => setPost(response.data))
+
+        setIsLoading(true);
+
+        httpClient.get(`${API.POST}/${id}`)
+            .then(response => {
+                setPost(response.data);
+                setIsLoading(false);
+            })
             .catch(error => {
-                // didn't get the post
-                console.error(error);
+                if (!error.response || error.response.status !== 404) {
+                    // response other than 404 (post not found)
+                    console.error(error);
+                }
                 navigate('/');
             });
+
     }, []);
 
     const deletePost = (id) => {
@@ -37,11 +49,15 @@ function ViewPost() {
             .catch(error => console.error(error));
     }
 
+    if (isLoading) {
+        return (
+            <Loading />
+        );
+    }
+
     return (
         <div className="container">
-
             {post ? (
-
                 <div className="row">
                     <div className="col-md-4">
                         <h2 className="display-5 text-body-emphasis mb-1">{post.title}</h2>

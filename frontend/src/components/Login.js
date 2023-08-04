@@ -14,9 +14,10 @@ function Login({ getUser }) {
     const [invalidText, setInvalidText] = useState(null);
 
     useEffect(() => {
+
         setIsLoading(true);
 
-        if(!user){
+        if (!user) {
             // user not logged in
             setIsLoading(false);
             return;
@@ -33,6 +34,7 @@ function Login({ getUser }) {
                     navigate('/');
                 }
             });
+
     }, []);
 
     const handleSubmit = (event) => {

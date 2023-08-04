@@ -14,6 +14,7 @@ function SignUp() {
     const [invalidText, setInvalidText] = useState(null);
 
     useEffect(() => {
+
         setIsLoading(true);
 
         if (!user) {
@@ -33,6 +34,7 @@ function SignUp() {
                     navigate('/');
                 }
             });
+
     }, []);
 
     const handleSubmit = (event) => {

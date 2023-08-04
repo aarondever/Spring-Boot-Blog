@@ -16,6 +16,7 @@ function EditPost() {
     const post = useRef(null);
 
     useEffect(() => {
+        
         setIsLoading(true);
 
         if (!user) {
@@ -146,65 +147,63 @@ function EditPost() {
         return (
             <Loading />
         );
-    } else {
-        return (
-            <div className="container">
-                <div className="row justify-content-center">
-                    <div className="col-md-8">
-                        <form onSubmit={handleSubmit}>
-                            <div className="card">
-                                <div className="card-header">Post</div>
-                                <div className="card-body">
-                                    <div className="form-group mb-3">
-                                        <label htmlFor="title">Title:</label>
-                                        <input type="text" name="title" className={`form-control ${invalidField === 'title' && 'is-invalid'}`}
-                                            defaultValue={post.current ? post.current.title : null} />
-                                        <div className="invalid-feedback">
-                                            {invalidText}
-                                        </div>
-                                    </div>
-                                    <div className="form-group mb-3">
-                                        <label htmlFor="content">Content:</label>
-                                        <textarea name="content" className={`form-control ${invalidField === 'content' && 'is-invalid'}`}
-                                            defaultValue={post.current ? post.current.content : null} ></textarea>
-                                        <div className="invalid-feedback">
-                                            {invalidText}
-                                        </div>
-                                    </div>
-                                    <div className="form-group mb-3">
-                                        <label htmlFor="image">Image:</label>
-                                        <input type="file" name="image" className={`form-control ${invalidField === 'image' && 'is-invalid'}`}
-                                            accept='.jpg,.jpeg,.png' />
-                                        {invalidField !== 'image' && (
-                                            <div className="form-text">
-                                                Image type: jpeg, jpg, png, Image size: &lt; 5MB
-                                            </div>
-                                        )}
-                                        <div className="invalid-feedback">
-                                            {invalidText}
-                                        </div>
-                                    </div>
-                                    <div className="form-group mb-3">
-                                        <label htmlFor="tags">Tags:</label>
-                                        <textarea name="tags" className="form-control" defaultValue={post.current ? post.current.tags.map(tag => tag.name).join(' ') : null}></textarea>
-                                        <div className="form-text">
-                                            Separate tags with spaces. (ex: python java programming_language)
-                                        </div>
-                                    </div>
-                                    <button type="submit" name="btnPost" className="btn btn-primary">
-                                        {id ? 'Save' : 'Post'}
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        );
     }
 
-
-
+    return (
+        <div className="container">
+            <div className="row justify-content-center">
+                <div className="col-md-8">
+                    <form onSubmit={handleSubmit}>
+                        <div className="card">
+                            <div className="card-header">Post</div>
+                            <div className="card-body">
+                                <div className="form-group mb-3">
+                                    <label htmlFor="title">Title:</label>
+                                    <input type="text" name="title" className={`form-control ${invalidField === 'title' && 'is-invalid'}`}
+                                        defaultValue={post.current ? post.current.title : null} />
+                                    <div className="invalid-feedback">
+                                        {invalidText}
+                                    </div>
+                                </div>
+                                <div className="form-group mb-3">
+                                    <label htmlFor="content">Content:</label>
+                                    <textarea name="content" className={`form-control ${invalidField === 'content' && 'is-invalid'}`}
+                                        defaultValue={post.current ? post.current.content : null} ></textarea>
+                                    <div className="invalid-feedback">
+                                        {invalidText}
+                                    </div>
+                                </div>
+                                <div className="form-group mb-3">
+                                    <label htmlFor="image">Image:</label>
+                                    <input type="file" name="image" className={`form-control ${invalidField === 'image' && 'is-invalid'}`}
+                                        accept='.jpg,.jpeg,.png' />
+                                    {invalidField !== 'image' && (
+                                        <div className="form-text">
+                                            Image type: jpeg, jpg, png, Image size: &lt; 5MB
+                                        </div>
+                                    )}
+                                    <div className="invalid-feedback">
+                                        {invalidText}
+                                    </div>
+                                </div>
+                                <div className="form-group mb-3">
+                                    <label htmlFor="tags">Tags:</label>
+                                    <textarea name="tags" className="form-control" defaultValue={post.current ? post.current.tags.map(tag => tag.name).join(' ') : null}></textarea>
+                                    <div className="form-text">
+                                        Separate tags with spaces. (ex: python java programming_language)
+                                    </div>
+                                </div>
+                                <button type="submit" name="btnPost" className="btn btn-primary">
+                                    {id ? 'Save' : 'Post'}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
 }
+
 
 export default EditPost;

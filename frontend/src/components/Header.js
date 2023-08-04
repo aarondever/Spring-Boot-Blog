@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from "../App";
-import API from "../API";
 
 function Header({ logout }) {
 
@@ -12,9 +11,7 @@ function Header({ logout }) {
     const [invalidField, setInvalidField] = useState('');
     const [invalidText, setInvalidText] = useState(null);
 
-    const onLogout = () => {
-        logout();
-    };
+    const onLogout = () => logout();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -115,14 +112,14 @@ function Header({ logout }) {
 
                 {user ? (
                     <div className="dropdown text-end">
-                        <a href="#" className="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button className="d-block link-body-emphasis dropdown-toggle bg-transparent border-0" data-bs-toggle="dropdown" aria-expanded="false">
                             {user.username}
-                        </a>
+                        </button >
                         <ul className="dropdown-menu text-small">
-                            <li><a href="#" className="dropdown-item" data-bs-toggle="modal" data-bs-target="#editUserModal" onClick={() => setUpdatePassword(false)}>Change username</a></li>
-                            <li><a href="#" className="dropdown-item" data-bs-toggle="modal" data-bs-target="#editUserModal" onClick={() => setUpdatePassword(true)}>Change password</a></li>
+                            <li><button className="dropdown-item" data-bs-toggle="modal" data-bs-target="#editUserModal" onClick={() => setUpdatePassword(false)}>Change username</button></li>
+                            <li><button className="dropdown-item" data-bs-toggle="modal" data-bs-target="#editUserModal" onClick={() => setUpdatePassword(true)}>Change password</button></li>
                             <li><hr className="dropdown-divider" /></li>
-                            <li><a href="#" className="dropdown-item" onClick={onLogout}>Logout</a></li>
+                            <li><button className="dropdown-item" onClick={onLogout}>Logout</button></li>
                         </ul>
                     </div>
                 ) : (
