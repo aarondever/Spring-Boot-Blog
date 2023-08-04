@@ -1,7 +1,11 @@
-# Make sure you have a `blog` database in MYSQL
+## Blog
 
-Or you can change the database in `application.properties`
+A "blog" project built using React, Spring Boot, and MySQL.
 
-# For firs time running
+# Database
 
-Either run the project with IntelliJ IDEA using the command `mvnw spring-boot:run -P prod` or install Maven and use the command `mvn spring-boot:run -P prod` in the project directory
+Upon starting the application, the `schema.sql` file located in `src/main/resources` will be executed. Please ensure that you have a database named "blog" prior to starting the application. If you need to change the database configuration, you can do so by modifying the `application.properties` file located in `src/main/resources`.
+
+# Deploying to server
+
+To deploy the application to a server, run the command `./mvnw spring-boot:run -P prod` or `mvn spring-boot:run -P prod`. This will build the frontend artifacts and start the server on `http://localhost:8080`.

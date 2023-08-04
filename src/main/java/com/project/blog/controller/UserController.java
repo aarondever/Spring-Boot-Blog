@@ -31,23 +31,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<UserBean> getUser(Authentication authentication) {
-        if (authentication == null) {
-            // user is not authenticated
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        // get the current user's username from the Authentication object
-        String username = authentication.getName();
-        UserBean user = userService.getUserByUsername(username);
-        if (user == null) {
-            // user not found
-            return ResponseEntity.notFound().build();
-        }
-        user.setPassword(""); // not letting frontend see the hashed password
-        return ResponseEntity.ok(user);
-    }
-
     @ValidateUser(password = false)
     @PutMapping("/user/username")
     public ResponseEntity<?> updateUsername(@RequestBody UserBean user) {
@@ -71,4 +54,28 @@ public class UserController {
         }
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/user")
+    public ResponseEntity<UserBean> getUser(Authentication authentication) {
+        if (authentication == null) {
+            // user is not authenticated
+            return ResponseEntity.ok(null);
+        }
+        // get the current user's username from the Authentication object
+        String username = authentication.getName();
+        UserBean user = userService.getUserByUsername(username);
+        if (user == null) {
+            // user not found
+            return ResponseEntity.notFound().build();
+        }
+        user.setPassword(""); // remove hashed password
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/session-expired")
+    public ResponseEntity<Boolean> isSessionExpired(Authentication authentication) {
+        // if the authentication object is null, the session is expired
+        return ResponseEntity.ok(authentication == null);
+    }
+
 }

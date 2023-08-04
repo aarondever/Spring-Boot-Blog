@@ -1,6 +1,8 @@
 import { useState, useContext, useEffect } from 'react';
 import { UserContext } from "../App"
 import { Link } from 'react-router-dom';
+import Loading from './Loading';
+import API from '../API';
 
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -24,7 +26,7 @@ function Home() {
 
     // get post list
     const getPosts = () => {
-        httpClient.get('/api/post', {
+        httpClient.get(API.POST, {
             params: { search, tagId, page }
         })
             .then(response => setPosts(response.data))
@@ -33,14 +35,14 @@ function Home() {
 
     // get all tag
     const getTags = () => {
-        httpClient.get('/api/tag')
+        httpClient.get(API.TAG)
             .then(response => setTags(response.data))
             .catch(error => console.error(error));
     };
 
     // delete post
-    const deletePost = async (id) => {
-        await httpClient.delete(`/api/post/${id}`)
+    const deletePost = (id) => {
+        httpClient.delete(`${API.POST}/${id}`)
             .then(() => {
                 getPosts();
                 getTags();
@@ -123,9 +125,7 @@ function Home() {
                                 </div>
                             </div>
                         )) : (
-                            <div className="spinner-border text-primary">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
+                            <Loading />
                         )}
                     </div>
                     {posts && posts.list.length !== 0 && (

@@ -6,11 +6,12 @@ import { useCookies } from 'react-cookie';
 import Header from './components/Header';
 import Home from './components/Home';
 import Loading from './components/Loading';
+import API from './API';
 
 const Login = lazy(() => import('./components/Login'));
 const SignUp = lazy(() => import('./components/SignUp'));
 const ViewPost = lazy(() => import('./components/EditPost'));
-const EditPost = lazy(() => import('./components/Loading'));
+const EditPost = lazy(() => import('./components/EditPost'));
 
 export const UserContext = createContext(null);
 
@@ -24,18 +25,27 @@ function App() {
     headers: { 'X-XSRF-TOKEN': cookies['XSRF-TOKEN'] }
   });
 
+  // get user authentication
   const getUser = () => {
     setIsLoading(true);
-    httpClient.get('/api/user')
-      .then(response => {
-        setUser(response.data);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        setUser(null);
-        setIsLoading(false);
-        console.error(error);
-      });
+    httpClient.get(API.USER)
+      .then(response => setUser(response.data || null))
+      .catch(error => console.error(error))
+      .finally(() => setIsLoading(false));
+  };
+
+  const logout = () => {
+    httpClient.post(API.LOGOUT)
+      .then(() => setUser(null))
+      .catch(error => console.error(error));
+  }
+
+  const isSessionExpired = () => {
+    return new Promise((resolve, reject) => {
+      httpClient.get(API.SESSION_EXPIRED)
+        .then(response => resolve(response.data))
+        .catch(error => console.error(error));
+    });
   };
 
   useEffect(() => {
@@ -49,13 +59,13 @@ function App() {
   }
 
   return (
-    <UserContext.Provider value={{ user, getUser, httpClient }}>
+    <UserContext.Provider value={{ user, httpClient, isSessionExpired, logout }}>
       <BrowserRouter>
-        <Header />
+        <Header logout={logout} />
         <Suspense fallback={<Loading />}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login getUser={getUser} />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/viewPost/:id" element={<ViewPost />} />
             <Route path="/editPost" element={<EditPost />} />
@@ -65,6 +75,7 @@ function App() {
       </BrowserRouter>
     </UserContext.Provider>
   );
+
 }
 
 export default App;

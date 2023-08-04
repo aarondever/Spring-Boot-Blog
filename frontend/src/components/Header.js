@@ -1,20 +1,19 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from "../App";
+import API from "../API";
 
-function Header() {
+function Header({ logout }) {
 
-    const { user, getUser, httpClient } = useContext(UserContext);
+    const { user, httpClient } = useContext(UserContext);
     const navigate = useNavigate();
 
     const [updatePassword, setUpdatePassword] = useState(false);
     const [invalidField, setInvalidField] = useState('');
     const [invalidText, setInvalidText] = useState(null);
 
-    const logout = () => {
-        httpClient.post('/api/logout')
-            .then(() => getUser())
-            .catch(error => console.error(error));
+    const onLogout = () => {
+        logout();
     };
 
     const handleSubmit = (event) => {
@@ -52,7 +51,7 @@ function Header() {
             httpClient.put('/api/user/password', { 'id': user.id, password, oldPassword })
                 .then(() => {
                     // logout user
-                    logout();
+                    onLogout();
                     navigate('/login');
                     window.location.reload();
                 })
@@ -123,7 +122,7 @@ function Header() {
                             <li><a href="#" className="dropdown-item" data-bs-toggle="modal" data-bs-target="#editUserModal" onClick={() => setUpdatePassword(false)}>Change username</a></li>
                             <li><a href="#" className="dropdown-item" data-bs-toggle="modal" data-bs-target="#editUserModal" onClick={() => setUpdatePassword(true)}>Change password</a></li>
                             <li><hr className="dropdown-divider" /></li>
-                            <li><a href="#" className="dropdown-item" onClick={logout}>Logout</a></li>
+                            <li><a href="#" className="dropdown-item" onClick={onLogout}>Logout</a></li>
                         </ul>
                     </div>
                 ) : (

@@ -1,23 +1,38 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from "../App"
+import Loading from './Loading';
+import API from '../API';
 
 function SignUp() {
 
-    const { httpClient } = useContext(UserContext);
+    const { user, httpClient, isSessionExpired, logout } = useContext(UserContext);
     const navigate = useNavigate();
 
+    const [isLoading, setIsLoading] = useState(true);
     const [invalidField, setInvalidField] = useState('');
     const [invalidText, setInvalidText] = useState(null);
 
     useEffect(() => {
-        // user in UserContext won't update in time in here, thus send request to api
-        httpClient.get('/api/user')
-            .then(() => {
-                // user is logged in
-                navigate('/');
-                return;
-            }).catch(error => console.log(error));
+        setIsLoading(true);
+
+        if (!user) {
+            // user not logged in
+            setIsLoading(false);
+            return;
+        }
+
+        isSessionExpired()
+            .then(expired => {
+                if (expired) {
+                    // session expired
+                    logout();
+                    setIsLoading(false);
+                } else {
+                    // user logged in
+                    navigate('/');
+                }
+            });
     }, []);
 
     const handleSubmit = (event) => {
@@ -45,7 +60,7 @@ function SignUp() {
             return;
         }
 
-        httpClient.post('/api/signup', { username, password })
+        httpClient.post(API.SIGNUP, { username, password })
             .then(() => {
                 if (window.history.length > 2) {
                     // has previous browser’s history
@@ -60,8 +75,14 @@ function SignUp() {
             });
     };
 
+    if (isLoading) {
+        return (
+            <Loading />
+        );
+    }
+
     return (
-        <div className="container position-relative">
+        <div className="container">
             <div className="row justify-content-center">
                 <div className="col-md-4">
                     <form onSubmit={handleSubmit}>
