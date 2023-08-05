@@ -44,9 +44,7 @@ public class PostController {
      * @param image   post image
      * @param tags    post tags
      * @return success: http 201
-     * 1: title or content invalid: http 400
-     * 2: image type invalid: http 400
-     * image size too large: http 413
+     * request data: http 400
      */
     @ValidatePost(id = false)
     @PostMapping
@@ -59,10 +57,9 @@ public class PostController {
         if (postService.insertPost(title, content, image, tags)) {
             // insert success
             return ResponseEntity.created(null).build();
-        } else {
-            // insert failed
-            return ResponseEntity.internalServerError().build();
         }
+        // insert failed
+        return ResponseEntity.internalServerError().build();
     }
 
     /**
@@ -73,9 +70,7 @@ public class PostController {
      * @param image   post image
      * @param tags    post tags
      * @return success: http 204
-     * 1: title or content invalid: http 400
-     * 2: image type invalid: http 400
-     * image size too large: http 413
+     * request data invalid: http 400
      * post not found: http 404
      */
     @ValidatePost
@@ -89,10 +84,9 @@ public class PostController {
         if (postService.updatePost(id, title, content, image, tags)) {
             // update success
             return ResponseEntity.noContent().build();
-        } else {
-            // update failed
-            return ResponseEntity.internalServerError().build();
         }
+        // update failed
+        return ResponseEntity.internalServerError().build();
     }
 
     @ValidatePost(data = false)

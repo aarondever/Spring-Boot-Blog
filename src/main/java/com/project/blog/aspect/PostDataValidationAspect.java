@@ -45,28 +45,21 @@ public class PostDataValidationAspect {
             return ResponseEntity.notFound().build();
         }
 
-        if (validatePost.data()) {
-            int validationResult = validatePostData(title, content, image);
-            if (validationResult == 0) {
-                // validation passed, proceed with target method
-                return joinPoint.proceed();
-            } else if (validationResult == 3) {
-                // image is too large
-                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).build();
-            } else {
-                // validation failed, return bad request response
-                return ResponseEntity.badRequest().body(validationResult);
-            }
+        if (validatePost.data() && !validatePostData(title, content, image)) {
+
+            // validation failed, return bad request response
+            return ResponseEntity.badRequest().build();
         }
-        // no validation
+
+        // post data valid
         return joinPoint.proceed();
     }
 
-    private int validatePostData(String title, String content, MultipartFile image) {
+    private boolean validatePostData(String title, String content, MultipartFile image) {
 
         if (title.length() == 0 || content.length() == 0) {
             // title or content invalid
-            return 1;
+            return false;
         }
 
         if (!image.isEmpty()) {
@@ -74,17 +67,17 @@ public class PostDataValidationAspect {
             String contentType = image.getContentType();
             if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
                 // invalid image type
-                return 2;
+                return false;
             }
 
             long size = image.getSize();
             if (size > 5 * 1024 * 1024) {
                 // image is too large
-                return 3;
+                return false;
             }
         }
 
-        return 0;
+        return true;
     }
 
 }

@@ -24,27 +24,27 @@ public class UserDataValidationAspect {
     @Around("@annotation(validateUser)")
     public Object validateUser(ProceedingJoinPoint joinPoint, ValidateUser validateUser) throws Throwable {
         UserBean user = (UserBean) joinPoint.getArgs()[0];
-        if(validateUser.id()){
+        if (validateUser.id()) {
             // check user existence
-            if(userService.getUserById(user.getId()) == null){
+            if (userService.getUserById(user.getId()) == null) {
                 // user does not exists
                 return ResponseEntity.notFound().build();
             }
         }
 
-        if(validateUser.username()){
+        if (validateUser.username()) {
             // validate username
             String username = user.getUsername().trim();
-            if(username.length() == 0){
+            if (username.length() == 0) {
                 // empty username
                 return ResponseEntity.badRequest().build();
             }
         }
 
-        if(validateUser.password()){
+        if (validateUser.password()) {
             // validate password
             String password = user.getPassword().trim();
-            if(password.length() == 0){
+            if (password.length() == 0) {
                 // empty password
                 return ResponseEntity.badRequest().build();
             }

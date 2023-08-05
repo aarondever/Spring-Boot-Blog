@@ -12,10 +12,11 @@ function formatDate(dateString) {
 function ViewPost() {
 
     const { user, httpClient } = useContext(UserContext);
+    const navigate = useNavigate();
     const { id } = useParams();
+
     const [isLoading, setIsLoading] = useState(true);
     const [post, setPost] = useState(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -37,7 +38,7 @@ function ViewPost() {
     }, []);
 
     const deletePost = (id) => {
-        httpClient.delete(`/api/post/${id}`)
+        httpClient.delete(`${API.POST}/${id}`)
             .then(() => {
                 if (window.history.length > 2) {
                     // has previous browser’s history
@@ -57,7 +58,7 @@ function ViewPost() {
 
     return (
         <div className="container">
-            {post ? (
+            {post && (
                 <div className="row">
                     <div className="col-md-4">
                         <h2 className="display-5 text-body-emphasis mb-1">{post.title}</h2>
@@ -82,10 +83,6 @@ function ViewPost() {
                         </p>
                     )}
                     <p>{post.content}</p>
-                </div>
-            ) : (
-                <div className="spinner-border text-primary">
-                    <span className="visually-hidden">Loading...</span>
                 </div>
             )}
 

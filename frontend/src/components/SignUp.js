@@ -1,17 +1,17 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from "../App"
+import { useForm } from 'react-hook-form';
 import Loading from './Loading';
 import API from '../API';
 
 function SignUp() {
 
     const { user, httpClient, isSessionExpired, logout } = useContext(UserContext);
+    const { register, setError, formState: { errors }, handleSubmit } = useForm();
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(true);
-    const [invalidField, setInvalidField] = useState('');
-    const [invalidText, setInvalidText] = useState(null);
 
     useEffect(() => {
 
@@ -37,32 +37,14 @@ function SignUp() {
 
     }, []);
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const username = formData.get('username').trim();
-        const password = formData.get('password').trim();
-        const confirmPassword = formData.get('confirm_password').trim();
+    const onSignUp = (data) => {
 
-        if (username.length === 0) {
-            setInvalidField('username');
-            setInvalidText('Please enter a username');
+        if (data.password !== data.confirm_password) {
+            setError('confirm_password', { type: 'not_match' });
             return;
         }
 
-        if (password.length === 0) {
-            setInvalidField('password');
-            setInvalidText('Please enter a password');
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            setInvalidField('confirm_password');
-            setInvalidText('Does not match password');
-            return;
-        }
-
-        httpClient.post(API.SIGNUP, { username, password })
+        httpClient.post(API.SIGNUP, data)
             .then(() => {
                 if (window.history.length > 2) {
                     // has previous browser’s history
@@ -71,9 +53,12 @@ function SignUp() {
                     navigate('/');
                 }
             })
-            .catch(() => {
-                setInvalidField('username');
-                setInvalidText('Username already exists');
+            .catch((error) => {
+                if (!error.response || error.response.status !== 409) {
+                    // response other than 409 (user already exists)
+                    console.error(error);
+                }
+                setError('username', { type: 'exists' });
             });
     };
 
@@ -87,36 +72,34 @@ function SignUp() {
         <div className="container">
             <div className="row justify-content-center">
                 <div className="col-md-4">
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit(onSignUp)}>
                         <h1 className="h3 mb-3 fw-normal">Sign-Up</h1>
-
                         <div className="form-floating mb-3">
-                            <input type="text" className={`form-control ${invalidField === 'username' && 'is-invalid'}`}
-                                placeholder="username" name="username" />
+                            <input type="text" className={`form-control ${errors.username && 'is-invalid'}`}
+                                placeholder="username" {...register("username", { required: true, pattern: /^(?!\s*$).{1,}$/ })} />
                             <label htmlFor='floatingInputValue'>Username</label>
                             <div className="invalid-feedback">
-                                {invalidText}
+                                {errors.username?.type === 'required' && "Please enter username"}
+                                {errors.username?.type === 'pattern' && "At least one character and not consist of only space(s)"}
+                                {errors.username?.type === 'exists' && "Username already exists"}
                             </div>
                         </div>
-
                         <div className="form-floating mb-3">
-                            <input type="password" className={`form-control ${invalidField === 'password' && 'is-invalid'}`}
-                                placeholder="password" name="password" />
+                            <input type="password" className={`form-control ${errors.password && 'is-invalid'}`}
+                                placeholder="password" {...register("password", { required: true })} />
                             <label htmlFor='floatingInputValue'>Password</label>
                             <div className="invalid-feedback">
-                                {invalidText}
+                                {errors.password && "Please enter password"}
                             </div>
                         </div>
-
                         <div className="form-floating mb-3">
-                            <input type="password" className={`form-control ${invalidField === 'confirm_password' && 'is-invalid'}`}
-                                placeholder="confirm password" name="confirm_password" />
+                            <input type="password" className={`form-control ${errors.confirm_password && 'is-invalid'}`}
+                                placeholder="confirm password" {...register("confirm_password")} />
                             <label htmlFor='floatingInputValue'>Confirm password</label>
                             <div className="invalid-feedback">
-                                {invalidText}
+                                {errors.confirm_password && "Does not match password"}
                             </div>
                         </div>
-
                         <button className="btn btn-primary w-100 py-2" type="submit">Sign-Up</button>
                     </form>
                 </div>
