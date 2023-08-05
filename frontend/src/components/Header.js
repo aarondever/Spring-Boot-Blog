@@ -1,99 +1,74 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useRef } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from "../App";
+import { useForm } from 'react-hook-form';
+import API from "../API";
 
 function Header({ logout }) {
 
     const { user, httpClient } = useContext(UserContext);
+    const { register, setError, formState: { errors }, handleSubmit } = useForm();
     const navigate = useNavigate();
 
     const [updatePassword, setUpdatePassword] = useState(false);
-    const [invalidField, setInvalidField] = useState('');
-    const [invalidText, setInvalidText] = useState(null);
+    const modalCloseBtn = useRef(null);
 
     const onLogout = () => logout();
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const formData = new FormData(event.target);
+    const onUpdate = (data) => {
+
         if (updatePassword) {
-            const oldPassword = formData.get('old_password').trim();
-            const password = formData.get('password').trim();
-            const confirmPassword = formData.get('confirm_password').trim();
 
-            if (oldPassword.length === 0) {
-                setInvalidField('old_password');
-                setInvalidText('Please enter a password');
+            if (data.currentPassword === data.password) {
+                // current password matching the new password
+                setError('password', { type: 'match' });
                 return;
             }
 
-            if (password.length === 0) {
-                setInvalidField('password');
-                setInvalidText('Please enter a new password');
+            if (data.password !== data.confirmPassword) {
+                // confirm password does not match the new password
+                setError('confirmPassword', { type: 'not_match' });
                 return;
             }
 
-            if (oldPassword === password) {
-                setInvalidField('password');
-                setInvalidText('Cannot matching orignial password');
-                return;
-            }
-
-            if (confirmPassword !== password) {
-                setInvalidField('confirm_password');
-                setInvalidText('Does not match new password');
-                return;
-            }
-
-            httpClient.put('/api/user/password', { 'id': user.id, password, oldPassword })
+            httpClient.put(`${API.USER}/password`, { ...data, 'id': user.id })
                 .then(() => {
                     // logout user
-                    onLogout();
+                    logout();
                     navigate('/login');
-                    window.location.reload();
+                    modalCloseBtn.current.click();
                 })
                 .catch(error => {
                     if (error.response) {
                         if (error.response.status === 404) {
-                            // old password incorrect
-                            setInvalidField('old_password');
-                            setInvalidText('Password incorrect');
-
+                            // current password incorrect
+                            setError('currentPassword', { type: 'incorrect' });
+                            return;
                         } else if (error.response.status === 409) {
                             // old password same with new password
-                            setInvalidField('password');
-                            setInvalidText('Cannot matching orignial password');
+                            setError('password', { type: 'match' });
+                            return;
                         }
                     }
                     // failed to update
                     console.error(error);
                 });
         } else {
-            const username = formData.get('username').trim();
 
-            if (user.username === username) {
-                setInvalidField('username');
-                setInvalidText('Cannot matching original username');
+            if (user.username === data.username) {
+                // current username matching the new username
+                setError('username', { type: 'match' });
                 return;
             }
 
-            if (username.length === 0) {
-                setInvalidField('username');
-                setInvalidText('Please enter a username');
-                return;
-            }
-
-            httpClient.put('/api/user/username', { 'id': user.id, username })
+            httpClient.put(`${API.USER}/username`, { ...data, 'id': user.id })
                 .then(() => window.location.reload())
                 .catch(error => {
-                    if (error.response && error.response.status === 409) {
-                        // username already exists
-                        setInvalidField('username');
-                        setInvalidText('Username already exists');
-                    } else {
-                        // failed to update
+                    if (!error.response || error.response.status !== 409) {
+                        // response other than 409 (user already exists)
                         console.error(error);
                     }
+                    setError('username', { type: 'exists' });
                 });
         }
     };
@@ -137,31 +112,33 @@ function Header({ logout }) {
                             <h5 className="modal-title">Change {updatePassword ? 'password' : 'username'}</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit(onUpdate)}>
                             {updatePassword ? (
                                 <div className="modal-body">
                                     <div className="mb-3">
-                                        <label htmlFor="old-password" className="col-form-label">Original password:</label>
-                                        <input key="old_password" type="password" className={`form-control ${invalidField === 'old_password' && 'is-invalid'}`}
-                                            placeholder="original password" name="old_password" />
+                                        <label htmlFor="currentPassword" className="col-form-label">Current password:</label>
+                                        <input key="currentPassword" type="password" className={`form-control ${errors.currentPassword && 'is-invalid'}`}
+                                            placeholder="current password" {...register("currentPassword", { required: true })} />
                                         <div className="invalid-feedback">
-                                            {invalidText}
+                                            {errors.currentPassword?.type === 'required' && "Please enter current password"}
+                                            {errors.currentPassword?.type === 'incorrect' && "Current password is incorrect"}
                                         </div>
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="password" className="col-form-label">New password:</label>
-                                        <input key="password" type="password" className={`form-control ${invalidField === 'password' && 'is-invalid'}`}
-                                            placeholder="new password" name="password" />
+                                        <input key="password" type="password" className={`form-control ${errors.password && 'is-invalid'}`}
+                                            placeholder="new password" {...register("password", { required: true })} />
                                         <div className="invalid-feedback">
-                                            {invalidText}
+                                            {errors.password?.type === 'required' && "Please enter new password"}
+                                            {errors.password?.type === 'match' && "New password cannot be the same as the current password"}
                                         </div>
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="confirm-password" className="col-form-label">Confirm password:</label>
-                                        <input key="confirm_password" type="password" className={`form-control ${invalidField === 'confirm_password' && 'is-invalid'}`}
-                                            placeholder="confirm password" name="confirm_password" />
+                                        <label htmlFor="confirmPassword" className="col-form-label">Confirm password:</label>
+                                        <input key="confirmPassword" type="password" className={`form-control ${errors.confirmPassword && 'is-invalid'}`}
+                                            placeholder="confirm password" {...register("confirmPassword")} />
                                         <div className="invalid-feedback">
-                                            {invalidText}
+                                            {errors.confirmPassword && "Does not match the new password"}
                                         </div>
                                     </div>
                                 </div>
@@ -169,18 +146,21 @@ function Header({ logout }) {
                                 <div className="modal-body">
                                     <div className="mb-3">
                                         <label htmlFor="username" className="col-form-label">Username:</label>
-                                        <input key="username" type="text" className={`form-control ${invalidField === 'username' && 'is-invalid'}`}
+                                        <input key="username" type="text" className={`form-control ${errors.username && 'is-invalid'}`}
                                             defaultValue={user && user.username}
-                                            placeholder="username" name="username" />
+                                            placeholder="username" {...register("username", { required: true, pattern: /^(?!\s*$).{1,}$/ })} />
                                         <div className="invalid-feedback">
-                                            {invalidText}
+                                            {errors.username?.type === 'required' && "Please enter username"}
+                                            {errors.username?.type === 'match' && "New username cannot be the same as the current username"}
+                                            {errors.username?.type === 'pattern' && "At least one character and not consist of only space(s)"}
+                                            {errors.username?.type === 'exists' && "Username already exists"}
                                         </div>
                                     </div>
                                 </div>
                             )}
                             <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" ref={modalCloseBtn}>Cancel</button>
                                 <button type="submit" className="btn btn-primary me-2">Save</button>
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             </div>
                         </form>
                     </div>

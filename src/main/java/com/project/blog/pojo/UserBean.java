@@ -8,6 +8,6 @@ public class UserBean  {
     private int id;
     private String username;
     private String password;
-    private String oldPassword;
+    private String currentPassword;
 
 }

@@ -66,14 +66,14 @@ public class UserService {
 
     public int updatePassword(UserBean user) {
         user.setPassword(user.getPassword().trim());
-        user.setOldPassword(user.getOldPassword().trim());
+        user.setCurrentPassword(user.getCurrentPassword().trim());
         UserBean storedUser = userMapper.findById(user.getId());
-        if (!passwordEncoder.matches(user.getOldPassword(), storedUser.getPassword())) {
-            // old password incorrect
+        if (!passwordEncoder.matches(user.getCurrentPassword(), storedUser.getPassword())) {
+            // current password is incorrect
             return 1;
         }
         if (passwordEncoder.matches(user.getPassword(), storedUser.getPassword())) {
-            // new password same with old password
+            // new password matching current password
             return 2;
         }
         String hashedPassword = passwordEncoder.encode(user.getPassword());

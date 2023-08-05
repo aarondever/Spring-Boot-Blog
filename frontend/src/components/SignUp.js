@@ -39,8 +39,8 @@ function SignUp() {
 
     const onSignUp = (data) => {
 
-        if (data.password !== data.confirm_password) {
-            setError('confirm_password', { type: 'not_match' });
+        if (data.password !== data.confirmPassword) {
+            setError('confirmPassword', { type: 'not_match' });
             return;
         }
 
@@ -93,11 +93,11 @@ function SignUp() {
                             </div>
                         </div>
                         <div className="form-floating mb-3">
-                            <input type="password" className={`form-control ${errors.confirm_password && 'is-invalid'}`}
-                                placeholder="confirm password" {...register("confirm_password")} />
+                            <input type="password" className={`form-control ${errors.confirmPassword && 'is-invalid'}`}
+                                placeholder="confirm password" {...register("confirmPassword")} />
                             <label htmlFor='floatingInputValue'>Confirm password</label>
                             <div className="invalid-feedback">
-                                {errors.confirm_password && "Does not match password"}
+                                {errors.confirmPassword && "Does not match the new password"}
                             </div>
                         </div>
                         <button className="btn btn-primary w-100 py-2" type="submit">Sign-Up</button>
