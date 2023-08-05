@@ -73,7 +73,7 @@ function SignUp() {
             <div className="row justify-content-center">
                 <div className="col-md-4">
                     <form onSubmit={handleSubmit(onSignUp)}>
-                        <h1 className="h3 mb-3 fw-normal">Sign-Up</h1>
+                        <h3 className="mb-3 fw-normal">Sign-Up</h3>
                         <div className="form-floating mb-3">
                             <input type="text" className={`form-control ${errors.username && 'is-invalid'}`}
                                 placeholder="username" {...register("username", { required: true, pattern: /^(?!\s*$).{1,}$/ })} />

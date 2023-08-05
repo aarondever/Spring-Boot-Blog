@@ -63,6 +63,8 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")
                         .addLogoutHandler(new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(CACHE, COOKIES)))
+                ).sessionManagement(session -> session
+                        .invalidSessionUrl("/login")
                 );
         return http.build();
     }

@@ -45,7 +45,7 @@ function Header({ logout }) {
                             setError('currentPassword', { type: 'incorrect' });
                             return;
                         } else if (error.response.status === 409) {
-                            // old password same with new password
+                            // old password matching the new password
                             setError('password', { type: 'match' });
                             return;
                         }
@@ -75,7 +75,7 @@ function Header({ logout }) {
 
     return (
         <div className="container">
-            <header className="d-flex justify-content-center py-3">
+            <header className="d-flex justify-content-between py-3">
                 <ul className="nav nav-pills me-lg-auto mb-2 justify-content-center mb-md-0">
                     <li className="nav-item">
                         <Link to="/" className={`nav-link link-body-emphasis ${window.location.pathname === '/' && 'active'}`}>Home</Link>

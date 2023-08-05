@@ -17,17 +17,17 @@ function PostList({ getPosts, posts, setSelectedPost }) {
     }, [getPosts]);
 
     return (
-        <div className="row row-cols-1 row-cols-md-2 g-4">
+        <div className="row g-5">
             {posts ? posts.list.map(post => (
-                <div key={post.id} className="col">
-                    <div className="card" style={{ height: "20rem" }}>
+                <div key={post.id} className="col-lg-6">
+                    <div className="card" style={{ minHeight: "20rem" }}>
                         <div className="row g-0 position-relative">
-                            <div className="col-md-4">
+                            <div className="col-lg-4">
                                 {post.image && (
                                     <img className="d-block mx-auto img-fluid object-fit-scale" src={`./images/${post.image}`} alt="thumbnail" style={{ width: "200px", height: "250px" }} />
                                 )}
                             </div>
-                            <div className="col-md-8">
+                            <div className="col-lg-8">
                                 <div className="card-body">
                                     <h3 className="card-title text-truncate">
                                         <Link to={`/viewPost/${post.id}`} className="link-underline link-underline-opacity-0 link-underline-opacity-75-hover stretched-link">
@@ -44,13 +44,13 @@ function PostList({ getPosts, posts, setSelectedPost }) {
                                 </div>
                             </div>
                         </div>
-                        <div className="row justify-content-center">
+                        <div className="card-footer gap-5 d-flex justify-content-center bg-transparent">
                             {user && user.id === post.user.id && (
                                 // login user is the author
-                                <div className="col-md-4">
-                                    <Link to={`/editPost/${post.id}`} className="btn btn-primary me-2">Edit</Link>
+                                <>
+                                    <Link to={`/editPost/${post.id}`} className="btn btn-primary">Edit</Link>
                                     <button type="button" name="btnDelete" className="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal" onClick={() => setSelectedPost(post)}>Delete</button>
-                                </div>
+                                </>
                             )}
                         </div>
                     </div>

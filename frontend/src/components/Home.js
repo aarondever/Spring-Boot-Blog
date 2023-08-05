@@ -1,8 +1,8 @@
-import { useState, useContext, useEffect, useCallback } from 'react';
+import { useState, useContext, useCallback, useRef } from 'react';
 import { UserContext } from "../App"
-import Loading from './Loading';
 import API from '../API';
 import PostList from './PostList';
+import TagList from './TagList';
 
 function Home() {
 
@@ -12,12 +12,8 @@ function Home() {
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
     const [tagId, setTagId] = useState(0);
-
     const [selectedPost, setSelectedPost] = useState(null);
-
-    useEffect(() => {
-        getTags();
-    }, []);
+    const offcanvasCloseBtn = useRef(null);
 
     // get post list
     const getPosts = useCallback(async () => {
@@ -62,32 +58,33 @@ function Home() {
 
     return (
         <div className="container-fluid">
+
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasTags" aria-labelledby="offcanvasTagsLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasTagsLabel">Tags</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" ref={offcanvasCloseBtn}></button>
+                </div>
+                <div class="offcanvas-body">
+                    <TagList tags={tags} tagId={tagId} getTags={getTags} setTagId={setTagId} offcanvasCloseBtn={offcanvasCloseBtn} />
+                </div>
+            </div>
+
             <div className="row">
-                <div className="col-sm-3 col-md-2">
-                    <div className="d-flex flex-column flex-shrink-0 p-3" style={{ width: "280px" }}>
+                <div className="col-md-3 col-lg-2 d-none d-md-block">
+                    <div className="d-flex flex-column flex-shrink-0 p-3">
                         <p className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-body-emphasis"><span className="fs-4">Tags:</span></p>
                         <hr />
-                        <ul className="nav nav-pills flex-column mb-auto">
-                            <li className="nav-item">
-                                <button className={`w-100 nav-link link-body-emphasis ${0 === tagId ? 'active' : ''}`} onClick={() => setTagId(0)}>
-                                    No tag
-                                </button>
-                            </li>
-                            {tags ? tags.map(tag => (
-                                <li key={tag.id} className="nav-item">
-                                    <button className={`w-100 nav-link link-body-emphasis ${tag.id === tagId ? 'active' : ''}`} onClick={() => setTagId(tag.id)}>
-                                        {tag.name}
-                                    </button>
-                                </li>
-                            )) : (
-                                <Loading />
-                            )}
-                        </ul>
+                        <TagList tags={tags} tagId={tagId} getTags={getTags} setTagId={setTagId} offcanvasCloseBtn={offcanvasCloseBtn} />
                     </div>
                 </div>
-                <div className="col-sm-8">
-                    <div className="row m-3 justify-content-center">
-                        <div className="col-md-4">
+                <div className="col-md-8">
+                    <div className="row mb-3 justify-content-md-center justify-content-between">
+                        <div className='col-2 d-md-none'>
+                            <button class="btn btn-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTags" aria-controls="offcanvasTags">
+                                Tags
+                            </button>
+                        </div>
+                        <div className="col-10">
                             <form onSubmit={handleSearchSubmit}>
                                 <div className="input-group rounded">
                                     <input type="search" className="form-control" placeholder="search title or content" name="search" />
