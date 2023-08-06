@@ -13,7 +13,12 @@ function Header({ logout }) {
     const [updatePassword, setUpdatePassword] = useState(false);
     const modalCloseBtn = useRef(null);
 
-    const onLogout = () => logout();
+    const onLogout = () => {
+        logout();
+        if (window.location.pathname.includes('/editPost')) {
+            navigate('/');
+        }
+    };
 
     const onUpdate = (data) => {
 

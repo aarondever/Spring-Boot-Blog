@@ -55,7 +55,6 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .loginProcessingUrl("/api/login")
-                        .defaultSuccessUrl("/", true)
                         .failureHandler(new CustomAuthenticationFailureHandler())
                         .permitAll()
                 )
@@ -63,8 +62,6 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")
                         .addLogoutHandler(new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(CACHE, COOKIES)))
-                ).sessionManagement(session -> session
-                        .invalidSessionUrl("/login")
                 );
         return http.build();
     }

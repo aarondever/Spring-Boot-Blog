@@ -1,8 +1,9 @@
-import { useState, useContext, useCallback, useRef } from 'react';
+import { useState, useContext, useEffect, useCallback, useRef } from 'react';
 import { UserContext } from "../App"
 import API from '../API';
 import PostList from './PostList';
 import TagList from './TagList';
+import Loading from './Loading';
 
 function Home() {
 
@@ -13,30 +14,31 @@ function Home() {
     const [page, setPage] = useState(1);
     const [tagId, setTagId] = useState(0);
     const [selectedPost, setSelectedPost] = useState(null);
+    const [isTagsLoading, setIsTagssLoading] = useState(true);
+
     const offcanvasCloseBtn = useRef(null);
 
+    useEffect(() => {
+        getTags();
+    }, []);
+
     // get post list
-    const getPosts = useCallback(async () => {
+    const getPosts = useCallback(() => {
         setPosts(null);
-        try {
-            const response = await httpClient.get(API.POST, {
-                params: { search, tagId, page }
-            });
-            setPosts(response.data);
-        } catch (error) {
-            console.error(error);
-        }
+        httpClient.get(API.POST, { params: { search, tagId, page } })
+            .then((response) => setPosts(response.data))
+            .catch((error) => console.error(error));
     }, [search, tagId, page]);
 
     // get all tag
-    const getTags = async () => {
-        setTags(null);
-        try {
-            const response = await httpClient.get(API.TAG);
-            setTags(response.data);
-        } catch (error) {
-            console.error(error);
-        }
+    const getTags = () => {
+        setIsTagssLoading(true);
+        httpClient.get(API.TAG)
+            .then((response) => {
+                setTags(response.data);
+                setIsTagssLoading(false);
+            })
+            .catch((error) => console.error(error));
     };
 
     // delete post
@@ -59,28 +61,35 @@ function Home() {
     return (
         <div className="container-fluid">
 
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasTags" aria-labelledby="offcanvasTagsLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasTagsLabel">Tags</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" ref={offcanvasCloseBtn}></button>
+            <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasTags" aria-labelledby="offcanvasTagsLabel">
+                <div className="offcanvas-header">
+                    <h5 className="offcanvas-title" id="offcanvasTagsLabel">Tags</h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" ref={offcanvasCloseBtn}></button>
                 </div>
-                <div class="offcanvas-body">
-                    <TagList tags={tags} tagId={tagId} getTags={getTags} setTagId={setTagId} offcanvasCloseBtn={offcanvasCloseBtn} />
+                <div className="offcanvas-body">
+                    {isTagsLoading ? (
+                        <Loading />
+                    ) : (
+                        <TagList tags={tags} tagId={tagId} getTags={getTags} setTagId={setTagId} offcanvasCloseBtn={offcanvasCloseBtn} />
+                    )}
                 </div>
             </div>
-
             <div className="row">
                 <div className="col-md-3 col-lg-2 d-none d-md-block">
                     <div className="d-flex flex-column flex-shrink-0 p-3">
                         <p className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-body-emphasis"><span className="fs-4">Tags:</span></p>
                         <hr />
-                        <TagList tags={tags} tagId={tagId} getTags={getTags} setTagId={setTagId} offcanvasCloseBtn={offcanvasCloseBtn} />
+                        {isTagsLoading ? (
+                            <Loading />
+                        ) : (
+                            <TagList tags={tags} tagId={tagId} getTags={getTags} setTagId={setTagId} offcanvasCloseBtn={offcanvasCloseBtn} />
+                        )}
                     </div>
                 </div>
                 <div className="col-md-8">
                     <div className="row mb-3 justify-content-md-center justify-content-between">
                         <div className='col-2 d-md-none'>
-                            <button class="btn btn-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTags" aria-controls="offcanvasTags">
+                            <button className="btn btn-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTags" aria-controls="offcanvasTags">
                                 Tags
                             </button>
                         </div>
