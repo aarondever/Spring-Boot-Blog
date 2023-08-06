@@ -59,12 +59,12 @@ function Home() {
     return (
         <div className="container-fluid">
 
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasTags" aria-labelledby="offcanvasTagsLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasTagsLabel">Tags</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" ref={offcanvasCloseBtn}></button>
+            <div className="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasTags" aria-labelledby="offcanvasTagsLabel">
+                <div className="offcanvas-header">
+                    <h5 className="offcanvas-title" id="offcanvasTagsLabel">Tags</h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" ref={offcanvasCloseBtn}></button>
                 </div>
-                <div class="offcanvas-body">
+                <div className="offcanvas-body">
                     <TagList tags={tags} tagId={tagId} getTags={getTags} setTagId={setTagId} offcanvasCloseBtn={offcanvasCloseBtn} />
                 </div>
             </div>
@@ -80,7 +80,7 @@ function Home() {
                 <div className="col-md-8">
                     <div className="row mb-3 justify-content-md-center justify-content-between">
                         <div className='col-2 d-md-none'>
-                            <button class="btn btn-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTags" aria-controls="offcanvasTags">
+                            <button className="btn btn-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTags" aria-controls="offcanvasTags">
                                 Tags
                             </button>
                         </div>
