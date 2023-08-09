@@ -31,11 +31,11 @@ function EditPost() {
                     // session expired
                     logout();
                     navigate('/login');
-                    return;
                 }
+                return expired;
+            }).then((expired) => {
+                if (expired) { return; }
                 // user logged in
-                return isSessionExpired(expired);
-            }).then(() => {
                 if (id) {
                     httpClient.get(`${API.POST}/${id}`)
                         .then(response => {
