@@ -43,7 +43,7 @@ Group=www-data
 WorkingDirectory=/home/<username>/Spring-Boot-Blog
 Environment="PATH=/usr/bin"
 Environment="SERVER_PORT=8001"
-ExecStart=/usr/bin/java -jar /home/<username>/Spring-Boot-Blog/target/blog-0.0.1-SNAPSHOT.jar
+ExecStart=/usr/bin/java -jar /home/<username>/Spring-Boot-Blog/target/blog.jar
 
 [Install]
 WantedBy=multi-user.target
