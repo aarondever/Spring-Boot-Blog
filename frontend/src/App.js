@@ -35,8 +35,12 @@ function App() {
   };
 
   const logout = () => {
+    setIsLoading(true);
     httpClient.post(API.LOGOUT)
-      .then(() => setUser(null))
+      .then(() => {
+        setUser(null);
+        setIsLoading(false);
+      })
       .catch(error => console.error(error));
   }
 

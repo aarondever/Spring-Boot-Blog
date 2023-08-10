@@ -12,6 +12,7 @@ function SignUp() {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(true);
+    const [isSigningUp, setIsSigningUp] = useState(false);
 
     useEffect(() => {
 
@@ -29,10 +30,10 @@ function SignUp() {
                     // session expired
                     logout();
                     setIsLoading(false);
-                } else {
-                    // user logged in
-                    navigate('/');
+                    return;
                 }
+                // user logged in
+                navigate('/');
             });
 
     }, []);
@@ -44,8 +45,10 @@ function SignUp() {
             return;
         }
 
+        setIsSigningUp(true);
         httpClient.post(API.SIGNUP, data)
             .then(() => {
+                setIsSigningUp(false);
                 if (window.history.length > 2) {
                     // has previous browser’s history
                     navigate(-1);
@@ -76,11 +79,11 @@ function SignUp() {
                         <h3 className="mb-3 fw-normal">Sign-Up</h3>
                         <div className="form-floating mb-3">
                             <input type="text" className={`form-control ${errors.username && 'is-invalid'}`}
-                                placeholder="username" {...register("username", { required: true, pattern: /^(?!\s*$).{1,}$/ })} />
+                                placeholder="username" {...register("username", { required: true, pattern: /^(?!\s*$).{1,30}$/ })} />
                             <label htmlFor='floatingInputValue'>Username</label>
                             <div className="invalid-feedback">
                                 {errors.username?.type === 'required' && "Please enter username"}
-                                {errors.username?.type === 'pattern' && "At least one character and not consist of only space(s)"}
+                                {errors.username?.type === 'pattern' && "At least 1 character and at most 30 characters"}
                                 {errors.username?.type === 'exists' && "Username already exists"}
                             </div>
                         </div>
@@ -100,7 +103,16 @@ function SignUp() {
                                 {errors.confirmPassword && "Does not match the new password"}
                             </div>
                         </div>
-                        <button className="btn btn-primary w-100 py-2" type="submit">Sign-Up</button>
+                        {isSigningUp ? (
+                            <button class="btn btn-primary w-100 py-2" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden" role="status">SigningUp...</span>
+                            </button>
+                        ) : (
+                            <>
+                                <button className="btn btn-primary w-100 py-2" type="submit">Sign-Up</button>
+                            </>
+                        )}
                     </form>
                 </div>
             </div>

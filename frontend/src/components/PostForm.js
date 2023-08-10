@@ -1,4 +1,4 @@
-import { useContext, useRef } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from "../App"
@@ -11,6 +11,7 @@ function PostForm({ id, post }) {
 
     const { register, setError, formState: { errors }, handleSubmit } = useForm({ defaultValues: post });
     const navigate = useNavigate();
+    const [isUploading, setIsUploading] = useState(false);
     const postForm = useRef(null);
 
     const onPost = (data) => {
@@ -33,31 +34,31 @@ function PostForm({ id, post }) {
         }
 
         const formData = new FormData(postForm.current);
-
+        setIsUploading(true);
         if (id) {
             // update
             httpClient.put(`${API.POST}/${id}`, formData)
                 .then(() => {
-                    if (window.history.length > 2) {
-                        // has previous browser’s history
-                        navigate(-1);
-                    } else {
-                        navigate('/');
-                    }
+                    finishedUpload();
                 })
                 .catch(error => console.error(error));
         } else {
             // insert
             httpClient.post(API.POST, formData)
                 .then(() => {
-                    if (window.history.length > 2) {
-                        // has previous browser’s history
-                        navigate(-1);
-                    } else {
-                        navigate('/');
-                    }
+                    finishedUpload();
                 })
                 .catch(error => console.error(error));
+        }
+    };
+
+    const finishedUpload = () => {
+        setIsUploading(true);
+        if (window.history.length > 2) {
+            // has previous browser’s history
+            navigate(-1);
+        } else {
+            navigate('/');
         }
     };
 
@@ -69,19 +70,19 @@ function PostForm({ id, post }) {
                     <div className="form-group mb-3">
                         <label htmlFor="title">Title:</label>
                         <input type="text" id="title" className={`form-control ${errors.title && "is-invalid"}`}
-                            defaultValue={post.current ? post.current.title : null} {...register("title", { required: true, pattern: /^(?!\s*$).{2,}$/ })} />
+                            defaultValue={post.current ? post.current.title : null} {...register("title", { required: true, pattern: /^(?!\s*$).{2,100}$/ })} />
                         <div className="invalid-feedback">
                             {errors.title?.type === 'required' && "Please enter title"}
-                            {errors.title?.type === 'pattern' && "At least two characters and not consist of only space(s)"}
+                            {errors.title?.type === 'pattern' && "At least 2 characters and at most 100 characters"}
                         </div>
                     </div>
                     <div className="form-group mb-3">
                         <label htmlFor="content">Content:</label>
                         <textarea id="content" className={`form-control ${errors.content && 'is-invalid'}`}
-                            defaultValue={post.current ? post.current.content : null} {...register("content", { required: true, pattern: /^(?!\s*$).{2,}$/ })}></textarea>
+                            defaultValue={post.current ? post.current.content : null} {...register("content", { required: true, pattern: /^(?!\s*$)[\s\S]{2,}$/ })}></textarea>
                         <div className="invalid-feedback">
                             {errors.content?.type === 'required' && "Please enter content"}
-                            {errors.title?.type === 'pattern' && "At least two characters and not consist of only space(s)"}
+                            {errors.content?.type === 'pattern' && "At least 2 characters"}
                         </div>
                     </div>
                     <div className="form-group mb-3">
@@ -105,9 +106,17 @@ function PostForm({ id, post }) {
                             Separate tags with spaces. (ex: python java programming_language)
                         </div>
                     </div>
-                    <button type="submit" name="btnPost" className="btn btn-primary">
-                        {id ? 'Save' : 'Post'}
-                    </button>
+                    {isUploading ? (
+                        <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                            <span role="status">Uploading...</span>
+                        </button>
+                    ) : (
+                        <button type="submit" name="btnPost" className="btn btn-primary">
+                            {id ? 'Save' : 'Post'}
+                        </button>
+                    )}
+
                 </div>
             </div>
         </form>
