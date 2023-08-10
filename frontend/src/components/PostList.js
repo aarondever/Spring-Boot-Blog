@@ -2,6 +2,7 @@ import { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from "../App"
 import Loading from './Loading';
+import API from '../API';
 
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -24,7 +25,7 @@ function PostList({ getPosts, posts, setSelectedPost }) {
                         <div className="row g-0 position-relative">
                             <div className="col-lg-4">
                                 {post.image && (
-                                    <img className="d-block mx-auto img-fluid object-fit-scale" src={`./images/${post.image}`} alt="thumbnail" style={{ width: "200px", height: "250px" }} />
+                                    <img className="d-block mx-auto img-fluid object-fit-scale" src={`${API.FILES}/${post.image}`} alt="thumbnail" style={{ width: "200px", height: "250px" }} />
                                 )}
                             </div>
                             <div className="col-lg-8">

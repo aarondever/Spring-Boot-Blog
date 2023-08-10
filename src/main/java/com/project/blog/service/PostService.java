@@ -8,17 +8,12 @@ import com.project.blog.mapper.UserMapper;
 import com.project.blog.pojo.Post;
 import com.project.blog.pojo.Tag;
 import com.project.blog.pojo.UserBean;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -28,14 +23,14 @@ public class PostService {
     private final TagMapper tagMapper;
     private final UserMapper userMapper;
 
-    @Value("${image.upload-dir}")
-    private String imageUploadDir;
+    private final StorageService storageService;
 
     @Autowired
-    public PostService(PostMapper postMapper, TagMapper tagMapper, UserMapper userMapper) {
+    public PostService(PostMapper postMapper, TagMapper tagMapper, UserMapper userMapper, StorageService storageService) {
         this.postMapper = postMapper;
         this.tagMapper = tagMapper;
         this.userMapper = userMapper;
+        this.storageService = storageService;
     }
 
     public PageInfo<Post> getPosts(String search, int tagId, int page, int pageSize) {
@@ -151,48 +146,11 @@ public class PostService {
     }
 
     private String uploadImage(MultipartFile image) {
-        File uploadDir = null;
-        try {
-            uploadDir = new File(new ClassPathResource(".").getFile().getPath() + imageUploadDir);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (!uploadDir.exists()) {
-            // create directory if not exists
-            uploadDir.mkdirs();
-        }
-
-        String imageName = image.getOriginalFilename();
-        String ext = FilenameUtils.getExtension(imageName);
-        String uniqueName = UUID.randomUUID() + "." + ext;
-        File imageFile = new File(uploadDir, uniqueName);
-
-        try {
-            image.transferTo(imageFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return uniqueName;
+        return storageService.store(image);
     }
 
     private void deleteImage(String imageName) {
-        File uploadDir;
-        try {
-            uploadDir = new File(new ClassPathResource(".").getFile().getPath() + imageUploadDir);
-        } catch (IOException e) {
-            return;
-        }
-
-        if (!uploadDir.exists()) {
-            // directory not exists
-            return;
-        }
-
-        File imageFile = new File(uploadDir, imageName);
-        if (imageFile.exists()) {
-            // image exists, delete it
-            imageFile.delete();
-        }
+        storageService.delete(imageName);
     }
 
 }

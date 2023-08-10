@@ -1,5 +1,6 @@
 HELP.md
 target/
+upload-dir
 *.log*
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/

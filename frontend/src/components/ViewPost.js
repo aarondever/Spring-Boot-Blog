@@ -74,7 +74,7 @@ function ViewPost() {
                     {post.current.image && (
                         <p>
                             <img
-                                src={`../images/${post.current.image}`}
+                                src={`${API.FILES}/${post.current.image}`}
                                 className="d-block mx-auto img-fluid object-fit-scale"
                                 alt="post"
                                 loading="lazy"

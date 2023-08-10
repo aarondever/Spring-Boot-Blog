@@ -41,8 +41,8 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/", "/index.html", "/static/**",
-                                "/images/**", "/*.ico", "/*.json", "/api/tag", "/api/session",
-                                "/api/user", "/api/login", "/api/signup").permitAll()
+                                "/*.ico", "/*.json", "/api/tag", "/api/session",
+                                "/api/user", "/api/login", "/api/signup", "/api/files/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/post/**").permitAll()
                         .anyRequest().authenticated()
                 )

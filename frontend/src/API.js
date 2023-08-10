@@ -8,7 +8,7 @@ const API = {
     SESSION_EXPIRED: BASE + '/session-expired',
     POST: BASE + '/post',
     TAG: BASE + '/tag',
+    FILES: BASE + '/files'
 };
 
 export default API;
-

@@ -95,9 +95,9 @@ function Login({ getUser }) {
                             </div>
                         </div>
                         {isLoggingIn ? (
-                            <button class="btn btn-primary w-100 py-2" type="button" disabled>
-                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                                <span class="visually-hidden" role="status">LoggingIn...</span>
+                            <button className="btn btn-primary w-100 py-2" type="button" disabled>
+                                <span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span className="visually-hidden" role="status">LoggingIn...</span>
                             </button>
                         ) : (
                             <>
