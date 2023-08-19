@@ -1,6 +1,6 @@
 # Blog
 
-A "blog" project built using React, Spring Boot, and MySQL.
+A blog website developed with React, Spring Boot, and MySQL. Live link: https://blog.aaronhong.net
 
 ## Database
 
