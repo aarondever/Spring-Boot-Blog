@@ -101,10 +101,9 @@ server {
 }
 ```
 
-Soft link conf files and restart nginx
+Soft link conf file and restart nginx
 
 ```shell
-sudo ln -s /etc/nginx/sites-available/django.conf /etc/nginx/sites-enabled/
-sudo ln -s /etc/nginx/sites-available/vue.conf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/blog.conf /etc/nginx/sites-enabled/
 sudo nginx -s reload
 ```
