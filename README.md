@@ -74,3 +74,37 @@ sudo systemctl daemon-reload
 sudo systemctl start blog
 sudo systemctl enable blog
 ```
+
+Install nginx:
+
+```shell
+sudo apt install nginx
+```
+
+Create nginx config file
+
+```shell
+sudo vi /etc/nginx/sites-available/blog.conf
+```
+
+Add the following content to the config file:
+
+```shell
+server {
+    listen 80;
+    server_name <Your IP address or domain name>;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://localhost:8080;
+    }
+}
+```
+
+Soft link conf files and restart nginx
+
+```shell
+sudo ln -s /etc/nginx/sites-available/django.conf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/vue.conf /etc/nginx/sites-enabled/
+sudo nginx -s reload
+```
