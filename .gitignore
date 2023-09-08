@@ -5,6 +5,7 @@ upload-dir
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+blog.p12
 
 ### STS ###
 .apt_generated
