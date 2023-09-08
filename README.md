@@ -113,7 +113,7 @@ server {
 }
 ```
 
-Soft link conf files and restart nginx
+Soft link conf file and restart nginx
 
 ```shell
 sudo ln -s /etc/nginx/sites-available/blog /etc/nginx/sites-enabled/
