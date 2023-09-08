@@ -100,8 +100,8 @@ server {
     listen 443 ssl;
     server_name <IP address or domain name>;
 
-    error_log /home/ubuntu/portfolio/error.log;
-    access_log /home/ubuntu/portfolio/access.log;
+    error_log /home/ubuntu/blog/error.log;
+    access_log /home/ubuntu/blog/access.log;
 
     ssl_certificate <Path to cert>;
     ssl_certificate_key <Path to key>;
