@@ -58,10 +58,9 @@ After=network.target
 [Service]
 User=<username>
 Group=www-data
-WorkingDirectory=/home/<username>/Spring-Boot-Blog
+WorkingDirectory=/home/<username>/blog
 Environment="PATH=/usr/bin"
-Environment="SERVER_PORT=8001"
-ExecStart=/usr/bin/java -jar /home/<username>/Spring-Boot-Blog/target/blog.jar
+ExecStart=/usr/bin/java -jar /home/<username>/blog/target/blog.jar
 
 [Install]
 WantedBy=multi-user.target
@@ -84,7 +83,7 @@ sudo apt install nginx
 Create nginx config file
 
 ```shell
-sudo vi /etc/nginx/sites-available/blog.conf
+sudo vi /etc/nginx/sites-available/blog
 ```
 
 Add the following content to the config file:
@@ -92,11 +91,24 @@ Add the following content to the config file:
 ```shell
 server {
     listen 80;
-    server_name <Your IP address or domain name>;
+    server_name <IP address or domain name>;
+
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name <IP address or domain name>;
+
+    error_log /home/ubuntu/portfolio/error.log;
+    access_log /home/ubuntu/portfolio/access.log;
+
+    ssl_certificate <Path to cert>;
+    ssl_certificate_key <Path to key>;
 
     location / {
         include proxy_params;
-        proxy_pass http://localhost:8080;
+        proxy_pass <Port or Stock>;
     }
 }
 ```
@@ -104,7 +116,6 @@ server {
 Soft link conf files and restart nginx
 
 ```shell
-sudo ln -s /etc/nginx/sites-available/django.conf /etc/nginx/sites-enabled/
-sudo ln -s /etc/nginx/sites-available/vue.conf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/blog /etc/nginx/sites-enabled/
 sudo nginx -s reload
 ```
